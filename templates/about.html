@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}About - SolarBill Optimizer{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl mx-auto px-6 py-12">
+
+    <!-- Page Header -->
+    <div class="mb-10">
+        <h1 class="text-4xl font-bold text-gray-900">
+            About SolarBill Optimizer
+        </h1>
+
+        <p class="text-gray-600 mt-2 text-lg">
+            A smart web application for electricity bill and solar analysis.
+        </p>
+    </div>
+
+
+    <!-- About Project -->
+    <div class="bg-white rounded-2xl shadow-md p-8 mb-8">
+
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            About the Project
+        </h2>
+
+        <p class="text-gray-600 leading-7">
+            SolarBill Optimizer is a web-based application designed to
+            help users understand their electricity consumption and
+            estimate the benefits of installing a solar energy system.
+        </p>
+
+        <p class="text-gray-600 leading-7 mt-4">
+            The application analyzes electricity bill information and
+            provides an estimated solar system size, solar generation,
+            savings, installation cost, subsidy, and return on investment.
+        </p>
+
+    </div>
+
+
+    <!-- Main Features -->
+    <div class="bg-white rounded-2xl shadow-md p-8 mb-8">
+
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Main Features
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-5">
+
+            <div class="border rounded-xl p-5">
+                <h3 class="font-bold text-lg text-gray-900">
+                    Electricity Bill Analysis
+                </h3>
+
+                <p class="text-gray-600 mt-2">
+                    Analyze bill amount and electricity units consumed.
+                </p>
+            </div>
+
+
+            <div class="border rounded-xl p-5">
+                <h3 class="font-bold text-lg text-gray-900">
+                    Solar Recommendation
+                </h3>
+
+                <p class="text-gray-600 mt-2">
+                    Estimate a suitable solar system size based on
+                    electricity usage.
+                </p>
+            </div>
+
+
+            <div class="border rounded-xl p-5">
+                <h3 class="font-bold text-lg text-gray-900">
+                    Savings & ROI
+                </h3>
+
+                <p class="text-gray-600 mt-2">
+                    Estimate solar savings, system cost, subsidy,
+                    and payback period.
+                </p>
+            </div>
+
+
+            <div class="border rounded-xl p-5">
+                <h3 class="font-bold text-lg text-gray-900">
+                    Bill History & Reports
+                </h3>
+
+                <p class="text-gray-600 mt-2">
+                    View previous electricity bill calculations
+                    and generated results.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Technologies -->
+    <div class="bg-white rounded-2xl shadow-md p-8 mb-8">
+
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Technologies Used
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+
+            <div class="border rounded-lg p-4">
+                <strong>Python</strong>
+                <p class="text-gray-600 mt-1">
+                    Application programming language
+                </p>
+            </div>
+
+            <div class="border rounded-lg p-4">
+                <strong>Flask</strong>
+                <p class="text-gray-600 mt-1">
+                    Web application framework
+                </p>
+            </div>
+
+            <div class="border rounded-lg p-4">
+                <strong>HTML & CSS</strong>
+                <p class="text-gray-600 mt-1">
+                    User interface development
+                </p>
+            </div>
+
+            <div class="border rounded-lg p-4">
+                <strong>SQLite / Database</strong>
+                <p class="text-gray-600 mt-1">
+                    Storage of users, bills, and calculation history
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Important Note -->
+    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-8 mb-8">
+
+        <h2 class="text-xl font-bold text-gray-900 mb-3">
+            Important Note
+        </h2>
+
+        <p class="text-gray-700 leading-7">
+            Solar generation, savings, installation cost, subsidy,
+            and ROI displayed by the application are estimates.
+            Actual results may vary depending on electricity tariffs,
+            sunlight conditions, roof conditions, system configuration,
+            vendor pricing, and applicable government or DISCOM rules.
+        </p>
+
+    </div>
+
+
+    <!-- Back Button -->
+    <div>
+        <a href="/dashboard"
+           class="inline-block bg-blue-600 hover:bg-blue-700
+                  text-white px-6 py-3 rounded-lg font-semibold">
+
+            Back to Dashboard
+
+        </a>
+    </div>
+
+</div>
+
+<!-- Developer -->
+<div class="text-center py-8">
+
+    <p class="text-gray-500 text-sm">
+        Developed by
+    </p>
+
+    <p class="text-xl font-bold text-gray-900 mt-1">
+        Swapnil Kadam
+    </p>
+
+    <p class="text-gray-500 text-sm mt-1">
+        SolarBill Optimizer
+    </p>
+
+</div>
+
+{% endblock %}

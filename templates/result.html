@@ -1,0 +1,23 @@
+<div class="max-w-lg mx-auto mt-10 bg-white p-8 rounded-3xl shadow-xl">
+
+    <h2 class="text-2xl font-bold text-center mb-6">
+        ⚡ Solar Recommendation
+    </h2>
+
+    <p><b>City:</b> {{ city }}</p>
+    <p><b>Monthly Bill:</b> ₹{{ bill }}</p>
+    <p><b>Units:</b> {{ units }} kWh</p>
+
+    <hr class="my-4">
+
+    <p><b>Required Solar:</b> {{ solar_kw }} kW</p>
+    <p><b>Installation Cost:</b> ₹{{ total_cost }}</p>
+    <p><b>Yearly Savings:</b> ₹{{ yearly_savings }}</p>
+    <p><b>Payback Time:</b> {{ payback }} years</p>
+
+    <a href="/dashboard"
+       class="block text-center mt-6 text-green-600 font-semibold">
+        🔙 Back
+    </a>
+
+</div>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}SolarBill Optimizer{% endblock %}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body class="bg-slate-100">
+
+    <!-- Flash Messages -->
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+    <div class="fixed top-5 right-5 z-50 w-96">
+
+        {% for message in messages %}
+
+        <div class="bg-blue-600 text-white px-5 py-3 rounded-xl shadow-lg mb-3">
+
+            {{ message }}
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+
+</html>

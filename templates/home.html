@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}SolarBill Optimizer{% endblock %}
+
+{% block content %}
+
+
+<!-- NAVBAR ONLY HERE -->
+<nav class="navbar flex justify-between items-center px-6 py-4">
+  <h1 class="text-white font-bold text-xl"></h1>
+
+  <div class="space-x-6">
+    <a href="/" class="text-white">Home</a>
+    <a href="#features" class="text-white">Features</a>
+    <a href="/login" class="text-white">Login</a>
+    <a href="/register" class="bg-yellow-400 text-black px-4 py-2 rounded-lg">Get Started</a>
+  </div>
+</nav>
+
+<!-- FULL PAGE BACKGROUND -->
+<div class="min-h-screen bg-cover bg-center bg-fixed"
+     style="
+     background-image: 
+     linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.55)),
+     url('{{ url_for('static', filename='images/hero/house.jpg') }}');
+     ">
+
+  <!-- TOP SPACING -->
+  <div class="pt-24"></div>
+
+  <!-- HERO (CENTERED NOW) -->
+  <div class="max-w-4xl mx-auto px-6 text-center text-white">
+
+    <p class="uppercase tracking-[6px] text-yellow-400 font-bold">
+      SMART SOLAR PLATFORM
+    </p>
+
+    <h1 class="text-5xl md:text-7xl font-black leading-tight mt-6">
+      AI Powered
+      <br>
+      <span class="text-yellow-400">
+        SolarBill Optimizer
+      </span>
+    </h1>
+
+    <p class="mt-8 text-lg text-gray-200 leading-8">
+      Reduce your electricity bill by up to
+      <strong class="text-yellow-400">80%</strong>
+      using intelligent solar analysis.
+      Get solar recommendations, ROI prediction
+      and detailed reports.
+    </p>
+
+    <div class="flex justify-center gap-5 mt-10 flex-wrap">
+      <a href="/register"
+         class="bg-yellow-400 hover:bg-yellow-500 text-black px-8 py-4 rounded-xl font-bold shadow-lg transition">
+         🚀 Get Started
+      </a>
+
+      <a href="#features"
+         class="border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black px-8 py-4 rounded-xl font-bold transition">
+         Learn More
+      </a>
+    </div>
+
+  </div>
+
+
+  <!-- FEATURES -->
+  <div id="features" class="max-w-7xl mx-auto px-6 mt-32 text-white">
+
+    <h2 class="text-5xl font-bold text-center">
+      Why Choose
+      <span class="text-yellow-400">
+        SolarBill Optimizer
+      </span>
+    </h2>
+
+    <p class="text-center text-gray-300 mt-5 text-xl">
+      Everything you need to analyze your electricity bill
+      and estimate your solar savings.
+    </p>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20">
+
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
+        <i class="fa-solid fa-file-invoice text-4xl text-yellow-400 mb-4"></i>
+        <h3 class="text-xl font-bold">Upload Bill</h3>
+        <p class="text-gray-300 mt-2">Upload your electricity bill.</p>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
+        <i class="fa-solid fa-solar-panel text-4xl text-yellow-400 mb-4"></i>
+        <h3 class="text-xl font-bold">AI Solar Analysis</h3>
+        <p class="text-gray-300 mt-2">Get best solar recommendation.</p>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
+        <i class="fa-solid fa-sack-dollar text-4xl text-yellow-400 mb-4"></i>
+        <h3 class="text-xl font-bold">Savings Estimator</h3>
+        <p class="text-gray-300 mt-2">Calculate monthly savings.</p>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
+        <i class="fa-solid fa-chart-line text-4xl text-yellow-400 mb-4"></i>
+        <h3 class="text-xl font-bold">ROI Calculator</h3>
+        <p class="text-gray-300 mt-2">Know payback period.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- HOW IT WORKS -->
+  <div class="max-w-6xl mx-auto px-6 mt-32 pb-20 text-white text-center">
+
+    <h2 class="text-5xl font-bold">
+      How It Works
+    </h2>
+
+    <p class="text-gray-300 mt-5 text-xl">
+      Simple 3 step process
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-10 mt-16">
+
+      <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
+        <h3 class="text-2xl font-bold text-yellow-400">1</h3>
+        <p class="mt-4 text-gray-300">Enter your bill details</p>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
+        <h3 class="text-2xl font-bold text-yellow-400">2</h3>
+        <p class="mt-4 text-gray-300">AI analyzes usage</p>
+      </div>
+
+      <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
+        <h3 class="text-2xl font-bold text-yellow-400">3</h3>
+        <p class="mt-4 text-gray-300">Get savings & ROI</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+{% endblock %}

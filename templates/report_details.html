@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Bill Report Details{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-6 py-10">
+
+    <!-- Header -->
+
+    <div class="flex justify-between items-center mb-10">
+
+        <div>
+
+            <h1 class="text-5xl font-bold">
+                📄 Bill Report Details
+            </h1>
+
+            <p class="text-gray-500 mt-2 text-lg">
+                Complete details of your uploaded electricity bill.
+            </p>
+
+        </div>
+
+        <a href="/reports"
+           class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition">
+
+            ← Back to Reports
+
+        </a>
+
+    </div>
+
+    <!-- Bill Information -->
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+
+        <h2 class="text-3xl font-bold mb-8">
+            📑 Bill Information
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div>
+                <p class="text-gray-500">CA Number</p>
+                <h3 class="text-2xl font-semibold">
+                    {{ report.ca_number }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Bill Month</p>
+                <h3 class="text-2xl font-semibold">
+                    {{ report.bill_month }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Units Consumed</p>
+                <h3 class="text-2xl font-semibold text-yellow-500">
+                    {{ report.units }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Bill Amount</p>
+                <h3 class="text-2xl font-semibold text-red-600">
+                    ₹{{ report.bill_amount }}
+                </h3>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Solar Recommendation -->
+
+    <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+
+        <h2 class="text-3xl font-bold mb-8">
+            ☀ Solar Recommendation
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <div>
+                <p class="text-gray-500">Recommended Solar System</p>
+                <h3 class="text-2xl font-bold text-blue-600">
+                    {{ report.solar_kw }} kW
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Monthly Savings</p>
+                <h3 class="text-2xl font-bold text-green-600">
+                    ₹{{ report.monthly_savings }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Yearly Savings</p>
+                <h3 class="text-2xl font-bold text-blue-500">
+                    ₹{{ report.yearly_savings }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Government Subsidy</p>
+                <h3 class="text-2xl font-bold text-yellow-500">
+                    ₹{{ report.subsidy }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Installation Cost</p>
+                <h3 class="text-2xl font-bold text-red-500">
+                    ₹{{ report.installation_cost }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Cost After Subsidy</p>
+                <h3 class="text-2xl font-bold text-green-600">
+                    ₹{{ report.final_cost }}
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Return on Investment (ROI)</p>
+                <h3 class="text-2xl font-bold text-purple-600">
+                    {{ report.roi }} Years
+                </h3>
+            </div>
+
+            <div>
+                <p class="text-gray-500">Uploaded On</p>
+                <h3 class="text-2xl font-semibold">
+                    {{ report.upload_date.strftime("%d-%m-%Y %H:%M") }}
+                </h3>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Buttons -->
+
+    <div class="flex gap-4">
+
+        <a href="/reports"
+           class="bg-gray-700 hover:bg-gray-800 text-white px-6 py-3 rounded-xl shadow-md">
+
+            ← Back
+
+        </a>
+
+        <a href="/download_pdf/{{ report.id }}"
+   class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl shadow-md">
+
+    📄 Download PDF
+
+</a>
+
+        <a href="/delete_report/{{ report.id }}"
+           onclick="return confirm('Are you sure you want to delete this report?')"
+           class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl shadow-md">
+
+            🗑 Delete Report
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

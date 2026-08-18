@@ -1,0 +1,97 @@
+{
+    "subsidy": {
+        "first_2kw_per_kw": 30000,
+        "additional_1kw_per_kw": 18000,
+        "maximum_central_subsidy": 78000,
+        "source": "PM Surya Ghar",
+        "source_url": "https://pmsuryaghar.gov.in/",
+        "last_checked": "2026-08-12 07:43:39",
+        "last_changed": null
+    },
+    "installation_cost": {
+        "Maharashtra": {
+            "discom": "MSEDCL",
+            "up_to_3kw_per_kw": 41400,
+            "above_3kw_to_10kw_per_kw": 39600,
+            "source": "MSEDCL I-SMART",
+            "source_url": "https://www.mahadiscom.in/ismart/",
+            "last_checked": "2026-08-13 07:30:34",
+            "last_changed": null
+        }
+    },
+    "discoms": {
+        "Maharashtra": {
+            "name": "MSEDCL",
+            "tariff_source": "https://www.mahadiscom.in/en/consumer/tariff-details/",
+            "solar_source": "https://www.mahadiscom.in/en/consumer/re-rooftop-net-metering/",
+            "last_checked": "2026-08-12 07:43:39",
+            "last_changed": null
+        }
+    },
+    "sources": {
+        "pm_surya_ghar": {
+            "name": "PM Surya Ghar Official Portal",
+            "url": "https://pmsuryaghar.gov.in/",
+            "content_hash": "f78e957c054d233b7c37148f0144e9094b8567a34ef2aaf50f10e9efb4adc4fd",
+            "last_checked": "2026-08-13 07:30:32",
+            "last_changed": "2026-08-12 07:45:46",
+            "changed": false,
+            "status": "success"
+        },
+        "mnre_notices": {
+            "name": "MNRE Current Notices",
+            "url": "https://mnre.gov.in/en/notice-category/current-notices/",
+            "content_hash": "ffd70664f5dac1b9cc5f299843b23e5cab2b2f13938d3b49e2e90a709713c112",
+            "last_checked": "2026-08-12 07:50:26",
+            "last_changed": "2026-08-12 07:45:47",
+            "changed": false,
+            "status": "success"
+        },
+        "pm_surya_ghar_cfa": {
+            "name": "PM Surya Ghar CFA Notification",
+            "url": "https://solarrooftop.pmsuryaghar.gov.in/notification/172_notification.pdf",
+            "content_hash": null,
+            "last_checked": "2026-08-12 07:50:47",
+            "last_changed": null,
+            "changed": false,
+            "status": "failed",
+            "error": "HTTPSConnectionPool(host='solarrooftop.pmsuryaghar.gov.in', port=443): Max retries exceeded with url: /notification/172_notification.pdf (Caused by ConnectTimeoutError(<HTTPSConnection(host='solarrooftop.pmsuryaghar.gov.in', port=443) at 0x19555c94f50>, 'Connection to solarrooftop.pmsuryaghar.gov.in timed out. (connect timeout=30)'))"
+        },
+        "mnre_current_notices": {
+            "name": "MNRE Current Notices",
+            "url": "https://mnre.gov.in/en/past-notices/current-notices/",
+            "content_hash": "b2f796190a9451095246aa937f79c47b50ee23c20296d0560bd17287dc392de8",
+            "last_checked": "2026-08-13 07:30:33",
+            "last_changed": "2026-08-13 07:30:33",
+            "changed": true,
+            "status": "success"
+        },
+        "mnre_cfa_guidelines": {
+            "name": "MNRE PM Surya Ghar CFA Guidelines",
+            "url": "https://mnre.gov.in/notice/operational-guidelines-for-implementation-of-the-component-central-financial-assistance-to-residential-consumers-of-pm-surya-ghar-muft-bijli-yojana/",
+            "content_hash": "051bcf5bbaa1950fc545921f9098df54426e8da8fcb571370e2f5fe943fd1555",
+            "last_checked": "2026-08-13 07:30:33",
+            "last_changed": "2026-08-13 07:30:33",
+            "changed": true,
+            "status": "success"
+        },
+        "mnre_cfa_amendment": {
+            "name": "MNRE PM Surya Ghar CFA Amendment",
+            "url": "https://mnre.gov.in/en/notice/amendment-in-guidelines-for-implementation-of-pm-surya-ghar-muft-bijli-yojana-for-the-component-of-cfa-to-residential-consumers/",
+            "content_hash": "56fc20503595c06b5bbaae6eb2faa7b8372d48d3b2d86c8f7fdad0c3fd743943",
+            "last_checked": "2026-08-13 07:30:34",
+            "last_changed": "2026-08-13 07:30:34",
+            "changed": true,
+            "status": "success"
+        },
+        "msedcl_ismart": {
+            "name": "MSEDCL I-SMART Solar",
+            "url": "https://www.mahadiscom.in/ismart/",
+            "content_hash": "6c9bd9ad3b7855d062f1f1888375602abfda597cadfd5ac547dac4d4df2437bb",
+            "last_checked": "2026-08-13 07:30:34",
+            "last_changed": "2026-08-13 07:30:34",
+            "changed": true,
+            "status": "success"
+        }
+    }
+}
