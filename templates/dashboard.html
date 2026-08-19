@@ -879,7 +879,7 @@
             <p class="text-xl font-bold text-yellow-600">
 
                 {{ "%.2f"|format(
-                    solar.daily_generation
+                    solar.get('daily_generation', 0)
                     if solar else 0
                 ) }}
 
@@ -905,7 +905,7 @@
             <p class="text-xl font-bold text-blue-600">
 
                 {{ "%.2f"|format(
-                    solar.monthly_generation
+                    solar.get('monthly_generation', 0)
                     if solar else 0
                 ) }}
 
@@ -931,7 +931,7 @@
             <p class="text-xl font-bold text-green-600">
 
                 {{ "%.2f"|format(
-                    solar.yearly_generation
+                    solar.get('yearly_generation', 0)
                     if solar else 0
                 ) }}
 

@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 .vscode/
 .idea/
+database.sql
+database_aiven.sql
+database_clean.sql
+static/uploads/

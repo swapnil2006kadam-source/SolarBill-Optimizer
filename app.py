@@ -1341,9 +1341,12 @@ def dashboard():
     # show the latest saved bill
         if latest_bill:
 
-            solar = dict(
-                latest_bill
-            )
+            solar = dict(latest_bill)
+
+            solar["daily_generation"] = solar.get(
+            "daily_generation",
+            0
+    )
 
         else:
 
