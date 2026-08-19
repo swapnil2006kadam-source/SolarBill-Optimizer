@@ -48,4 +48,7 @@ def send_login_otp(email):
         headers=headers
     )
 
+    print("BREVO STATUS:", response.status_code)
+    print("BREVO RESPONSE:", response.text)
+
     return otp, response.status_code
