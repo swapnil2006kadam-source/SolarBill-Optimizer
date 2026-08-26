@@ -1,22 +1,22 @@
 import requests
 import time
-from functools import lru_cache
 
 
 # =========================================================
 # SOLAR GENERATION SERVICE
 # =========================================================
 # Uses:
-# Open-Meteo Geocoding API
-# Open-Meteo Solar Radiation / Weather API
+# • Open-Meteo Geocoding API
+# • Open-Meteo Solar Radiation API
 #
 # Includes:
-# • API retry handling
-# • 429 rate-limit handling
 # • In-memory caching
-# • Request timeout
+# • 429 handling
+# • API failure fallback
+# • City-based solar radiation estimates
 #
-# The result is an ESTIMATE, not a guaranteed production value.
+# IMPORTANT:
+# Solar generation is an ESTIMATE.
 # =========================================================
 
 
@@ -24,13 +24,12 @@ from functools import lru_cache
 # CONFIGURATION
 # =========================================================
 
-OPEN_METEO_TIMEOUT = 20
+OPEN_METEO_TIMEOUT = 15
 
-# Cache solar radiation data for 6 hours.
-# This prevents repeated API calls for the same location.
+# Solar data cache: 6 hours
 SOLAR_CACHE_SECONDS = 6 * 60 * 60
 
-# Cache city coordinates for 24 hours.
+# Geocoding cache: 24 hours
 GEOCODE_CACHE_SECONDS = 24 * 60 * 60
 
 HEADERS = {
@@ -39,10 +38,11 @@ HEADERS = {
 
 
 # =========================================================
-# SIMPLE IN-MEMORY CACHE
+# CACHE
 # =========================================================
 
 _solar_cache = {}
+
 _geocode_cache = {}
 
 
@@ -57,7 +57,6 @@ def get_cached(cache, key, max_age):
 
     if time.time() - timestamp > max_age:
 
-        # Remove expired item
         cache.pop(key, None)
 
         return None
@@ -74,113 +73,159 @@ def set_cached(cache, key, value):
 
 
 # =========================================================
-# REQUEST HELPER
+# INDIAN CITY FALLBACK SOLAR RADIATION
+# =========================================================
+#
+# Unit:
+# kWh/m²/day
+#
+# These are approximate planning values.
+# They are NOT live measurements.
+#
+# If a city isn't listed, we use a regional default.
 # =========================================================
 
-def make_request(
-    url,
-    params,
-    timeout=OPEN_METEO_TIMEOUT,
-    retries=3
-):
+CITY_SOLAR_RADIATION = {
 
-    last_error = None
+    # Maharashtra
+    "mumbai": 5.0,
+    "pune": 5.2,
+    "nagpur": 5.3,
+    "nashik": 5.2,
+    "aurangabad": 5.3,
+    "chhatrapati sambhajinagar": 5.3,
+    "kolhapur": 5.0,
+    "solapur": 5.4,
+    "thane": 5.0,
+    "navi mumbai": 5.0,
 
-    for attempt in range(retries):
+    # Karnataka
+    "bengaluru": 5.2,
+    "bangalore": 5.2,
+    "mysore": 5.1,
+    "mysuru": 5.1,
+    "hubli": 5.3,
+    "dharwad": 5.3,
 
-        try:
+    # Gujarat
+    "ahmedabad": 5.5,
+    "surat": 5.3,
+    "vadodara": 5.3,
+    "rajkot": 5.6,
 
-            response = requests.get(
-                url,
-                params=params,
-                headers=HEADERS,
-                timeout=timeout
-            )
+    # Rajasthan
+    "jaipur": 5.6,
+    "jodhpur": 6.0,
+    "udaipur": 5.7,
+    "kota": 5.5,
 
-            # -------------------------------------------------
-            # Rate limit
-            # -------------------------------------------------
+    # Delhi / North India
+    "delhi": 5.0,
+    "new delhi": 5.0,
+    "gurgaon": 5.0,
+    "gurugram": 5.0,
+    "noida": 5.0,
 
-            if response.status_code == 429:
+    # Telangana
+    "hyderabad": 5.4,
+    "warangal": 5.3,
 
-                retry_after = response.headers.get(
-                    "Retry-After"
-                )
+    # Tamil Nadu
+    "chennai": 5.2,
+    "coimbatore": 5.3,
+    "madurai": 5.5,
+    "salem": 5.4,
 
-                if retry_after:
+    # Kerala
+    "kochi": 4.8,
+    "thiruvananthapuram": 4.9,
+    "kozhikode": 4.8,
 
-                    try:
-                        wait_time = float(
-                            retry_after
-                        )
+    # Andhra Pradesh
+    "vijayawada": 5.3,
+    "visakhapatnam": 5.1,
+    "tirupati": 5.3,
 
-                    except ValueError:
+    # West Bengal
+    "kolkata": 4.7,
 
-                        wait_time = (
-                            5 * (attempt + 1)
-                        )
+    # Odisha
+    "bhubaneswar": 5.0,
 
-                else:
+    # Madhya Pradesh
+    "bhopal": 5.4,
+    "indore": 5.5,
 
-                    # 5 sec → 10 sec → 15 sec
-                    wait_time = (
-                        5 * (attempt + 1)
-                    )
+    # Uttar Pradesh
+    "lucknow": 5.0,
+    "kanpur": 5.1,
+    "agra": 5.3,
 
-                print(
-                    f"⚠️ Open-Meteo rate limit "
-                    f"(429). "
-                    f"Retrying in {wait_time:.0f}s..."
-                )
+    # Bihar
+    "patna": 4.9,
 
-                if attempt < retries - 1:
+    # Punjab
+    "chandigarh": 5.0,
+    "amritsar": 5.0,
 
-                    time.sleep(
-                        wait_time
-                    )
+    # Haryana
+    "faridabad": 5.0,
 
-                    continue
+    # Goa
+    "panaji": 5.0,
+}
 
-                raise requests.HTTPError(
-                    "Open-Meteo API rate limit "
-                    "persisted after retries."
-                )
 
-            # -------------------------------------------------
-            # Other HTTP errors
-            # -------------------------------------------------
+# =========================================================
+# REGIONAL DEFAULT
+# =========================================================
 
-            response.raise_for_status()
+DEFAULT_SOLAR_RADIATION = 5.0
 
-            return response
 
-        except requests.RequestException as e:
+# =========================================================
+# FALLBACK SOLAR RADIATION
+# =========================================================
 
-            last_error = e
+def get_fallback_solar_radiation(city):
 
-            print(
-                f"⚠️ Open-Meteo request failed "
-                f"(attempt {attempt + 1}/{retries}):",
-                repr(e)
-            )
+    city_key = (
+        city
+        .strip()
+        .lower()
+    )
 
-            if attempt < retries - 1:
+    radiation = CITY_SOLAR_RADIATION.get(
+        city_key,
+        DEFAULT_SOLAR_RADIATION
+    )
 
-                wait_time = (
-                    2 ** attempt
-                )
+    print(
+        f"⚠️ Using fallback solar radiation "
+        f"for {city}: "
+        f"{radiation} kWh/m²/day"
+    )
 
-                print(
-                    f"Retrying in {wait_time}s..."
-                )
+    return {
 
-                time.sleep(
-                    wait_time
-                )
+        "average_daily_radiation_mj":
+            round(
+                radiation * 3.6,
+                2
+            ),
 
-            else:
+        "average_daily_radiation_kwh":
+            round(
+                radiation,
+                2
+            ),
 
-                raise last_error
+        "days_used":
+            30,
+
+        "source":
+            "Fallback estimate"
+    }
 
 
 # =========================================================
@@ -192,11 +237,11 @@ def get_city_coordinates(city):
     if not city:
         return None
 
-    # -----------------------------------------------------
-    # Normalize city
-    # -----------------------------------------------------
-
-    city_key = city.strip().lower()
+    city_key = (
+        city
+        .strip()
+        .lower()
+    )
 
     # -----------------------------------------------------
     # Check cache
@@ -225,75 +270,101 @@ def get_city_coordinates(city):
     )
 
     params = {
+
         "name": city,
+
         "count": 1,
+
         "language": "en",
+
         "format": "json",
+
         "countryCode": "IN"
     }
 
-    response = make_request(
-        url,
-        params,
-        timeout=15,
-        retries=3
-    )
+    try:
 
-    data = response.json()
+        response = requests.get(
+            url,
+            params=params,
+            headers=HEADERS,
+            timeout=10
+        )
 
-    results = data.get(
-        "results",
-        []
-    )
+        # -------------------------------------------------
+        # Handle rate limit
+        # -------------------------------------------------
 
-    if not results:
+        if response.status_code == 429:
+
+            print(
+                "⚠️ Open-Meteo geocoding "
+                "rate limited (429)."
+            )
+
+            return None
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        results = data.get(
+            "results",
+            []
+        )
+
+        if not results:
+
+            return None
+
+        location = results[0]
+
+        result = {
+
+            "name":
+                location.get("name"),
+
+            "latitude":
+                location.get("latitude"),
+
+            "longitude":
+                location.get("longitude"),
+
+            "state":
+                location.get("admin1"),
+
+            "country":
+                location.get("country")
+        }
+
+        # -------------------------------------------------
+        # Cache
+        # -------------------------------------------------
+
+        set_cached(
+            _geocode_cache,
+            city_key,
+            result
+        )
+
+        print(
+            f"📍 Coordinates fetched for {city.upper()}"
+        )
+
+        return result
+
+    except Exception as e:
+
+        print(
+            "⚠️ GEOCODING ERROR:",
+            repr(e)
+        )
 
         return None
 
-    location = results[0]
-
-    result = {
-
-        "name": location.get(
-            "name"
-        ),
-
-        "latitude": location.get(
-            "latitude"
-        ),
-
-        "longitude": location.get(
-            "longitude"
-        ),
-
-        "state": location.get(
-            "admin1"
-        ),
-
-        "country": location.get(
-            "country"
-        )
-    }
-
-    # -----------------------------------------------------
-    # Save to cache
-    # -----------------------------------------------------
-
-    set_cached(
-        _geocode_cache,
-        city_key,
-        result
-    )
-
-    print(
-        f"📍 Coordinates fetched for {city}"
-    )
-
-    return result
-
 
 # =========================================================
-# GET SOLAR RADIATION
+# GET SOLAR RADIATION FROM OPEN-METEO
 # =========================================================
 
 def get_solar_radiation(
@@ -301,13 +372,17 @@ def get_solar_radiation(
     longitude
 ):
 
-    # -----------------------------------------------------
-    # Cache key
-    # -----------------------------------------------------
-
     cache_key = (
-        round(float(latitude), 4),
-        round(float(longitude), 4)
+
+        round(
+            float(latitude),
+            4
+        ),
+
+        round(
+            float(longitude),
+            4
+        )
     )
 
     # -----------------------------------------------------
@@ -329,7 +404,7 @@ def get_solar_radiation(
         return cached_radiation
 
     # -----------------------------------------------------
-    # Open-Meteo Solar API
+    # Open-Meteo
     # -----------------------------------------------------
 
     url = (
@@ -338,21 +413,23 @@ def get_solar_radiation(
 
     params = {
 
-        "latitude": latitude,
+        "latitude":
+            latitude,
 
-        "longitude": longitude,
+        "longitude":
+            longitude,
 
-        # Last 30 days of solar radiation
-        "past_days": 30,
+        "past_days":
+            30,
 
-        # We don't need future forecast
-        "forecast_days": 0,
+        "forecast_days":
+            0,
 
-        "daily": (
-            "shortwave_radiation_sum"
-        ),
+        "daily":
+            "shortwave_radiation_sum",
 
-        "timezone": "auto"
+        "timezone":
+            "auto"
     }
 
     print(
@@ -360,99 +437,136 @@ def get_solar_radiation(
         "from Open-Meteo..."
     )
 
-    response = make_request(
-        url,
-        params,
-        timeout=20,
-        retries=3
-    )
+    try:
 
-    data = response.json()
+        response = requests.get(
+            url,
+            params=params,
+            headers=HEADERS,
+            timeout=OPEN_METEO_TIMEOUT
+        )
 
-    daily = data.get(
-        "daily",
-        {}
-    )
+        # -------------------------------------------------
+        # IMPORTANT:
+        # Don't retry 429 anymore.
+        #
+        # Immediately fall back.
+        # -------------------------------------------------
 
-    radiation_values = daily.get(
-        "shortwave_radiation_sum",
-        []
-    )
+        if response.status_code == 429:
 
-    # -----------------------------------------------------
-    # Remove missing values
-    # -----------------------------------------------------
+            print(
+                "⚠️ Open-Meteo returned 429. "
+                "Using fallback."
+            )
 
-    radiation_values = [
+            return None
 
-        value
+        response.raise_for_status()
 
-        for value in radiation_values
+        data = response.json()
 
-        if value is not None
-    ]
+        daily = data.get(
+            "daily",
+            {}
+        )
 
-    if not radiation_values:
+        radiation_values = daily.get(
+            "shortwave_radiation_sum",
+            []
+        )
 
-        return None
+        radiation_values = [
 
-    # -----------------------------------------------------
-    # Average daily solar radiation
-    # -----------------------------------------------------
+            value
 
-    average_mj = (
+            for value in radiation_values
 
-        sum(radiation_values)
+            if value is not None
+        ]
 
-        /
+        if not radiation_values:
 
-        len(radiation_values)
-    )
+            print(
+                "⚠️ No solar radiation values "
+                "received from Open-Meteo."
+            )
 
-    # -----------------------------------------------------
-    # Convert MJ/m² → kWh/m²
-    # -----------------------------------------------------
+            return None
 
-    average_kwh = (
-        average_mj / 3.6
-    )
+        # -------------------------------------------------
+        # Average radiation
+        # -------------------------------------------------
 
-    result = {
+        average_mj = (
 
-        "average_daily_radiation_mj":
-            round(
-                average_mj,
-                2
-            ),
+            sum(
+                radiation_values
+            )
 
-        "average_daily_radiation_kwh":
-            round(
-                average_kwh,
-                2
-            ),
+            /
 
-        "days_used":
             len(
                 radiation_values
             )
-    }
+        )
 
-    # -----------------------------------------------------
-    # Save result to cache
-    # -----------------------------------------------------
+        # -------------------------------------------------
+        # MJ/m² → kWh/m²
+        # -------------------------------------------------
 
-    set_cached(
-        _solar_cache,
-        cache_key,
-        result
-    )
+        average_kwh = (
+            average_mj / 3.6
+        )
 
-    print(
-        "☀️ Solar radiation data cached "
-        "successfully."
-    )
+        result = {
 
-    return result
+            "average_daily_radiation_mj":
+                round(
+                    average_mj,
+                    2
+                ),
+
+            "average_daily_radiation_kwh":
+                round(
+                    average_kwh,
+                    2
+                ),
+
+            "days_used":
+                len(
+                    radiation_values
+                ),
+
+            "source":
+                "Open-Meteo"
+        }
+
+        # -------------------------------------------------
+        # Cache
+        # -------------------------------------------------
+
+        set_cached(
+            _solar_cache,
+            cache_key,
+            result
+        )
+
+        print(
+            "☀️ Solar radiation data "
+            "cached successfully."
+        )
+
+        return result
+
+    except Exception as e:
+
+        print(
+            "⚠️ SOLAR API ERROR:",
+            repr(e)
+        )
+
+        return None
 
 
 # =========================================================
@@ -472,26 +586,63 @@ def estimate_solar_generation(
         city
     )
 
-    if not location:
-
-        raise ValueError(
-            f"Could not find location for {city}."
-        )
-
     # -----------------------------------------------------
     # Get solar radiation
     # -----------------------------------------------------
 
-    radiation = get_solar_radiation(
-        location["latitude"],
-        location["longitude"]
-    )
+    radiation = None
+
+    if location:
+
+        radiation = get_solar_radiation(
+            location["latitude"],
+            location["longitude"]
+        )
+
+    # -----------------------------------------------------
+    # FALLBACK
+    # -----------------------------------------------------
 
     if not radiation:
 
-        raise ValueError(
-            "Solar radiation data is unavailable."
+        print(
+            "⚠️ Open-Meteo unavailable."
         )
+
+        print(
+            "☀️ Switching to fallback "
+            "solar radiation estimate."
+        )
+
+        radiation = (
+            get_fallback_solar_radiation(
+                city
+            )
+        )
+
+    # -----------------------------------------------------
+    # If geocoding failed, still continue
+    # -----------------------------------------------------
+
+    if not location:
+
+        location = {
+
+            "name":
+                city.title(),
+
+            "latitude":
+                None,
+
+            "longitude":
+                None,
+
+            "state":
+                None,
+
+            "country":
+                "India"
+        }
 
     # -----------------------------------------------------
     # Performance ratio
@@ -527,7 +678,7 @@ def estimate_solar_generation(
     )
 
     # -----------------------------------------------------
-    # Yearly approximation
+    # Yearly generation
     # -----------------------------------------------------
 
     yearly_generation = (
@@ -584,7 +735,13 @@ def estimate_solar_generation(
             ),
 
         "performance_ratio":
-            PERFORMANCE_RATIO
+            PERFORMANCE_RATIO,
+
+        "radiation_source":
+            radiation.get(
+                "source",
+                "Unknown"
+            )
     }
 
 
@@ -605,8 +762,11 @@ if __name__ == "__main__":
     )
 
     test_cities = [
+
         "Mumbai",
+
         "Pune",
+
         "Nagpur"
     ]
 
@@ -636,9 +796,14 @@ if __name__ == "__main__":
             )
 
             print(
-                "Average solar radiation:",
+                "Solar radiation:",
                 f"{result['average_daily_radiation']} "
                 "kWh/m²/day"
+            )
+
+            print(
+                "Source:",
+                result["radiation_source"]
             )
 
             print(
