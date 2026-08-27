@@ -584,14 +584,11 @@
 
 
                     <button
-                        onclick="findNearbyInstallers()"
-                        class="bg-blue-600
-                               hover:bg-blue-700
-                               text-white px-4 py-3
-                               rounded-xl font-semibold"
-                    >
-                        📍 Find Near Me
-                    </button>
+    id="findInstallersBtn"
+    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold"
+>
+    📍 Find Near Me
+</button>
 
                 </div>
 
@@ -1490,93 +1487,76 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <script>
 
-function findNearbyInstallers() {
+document.addEventListener("DOMContentLoaded", function () {
 
+    const button = document.getElementById("findInstallersBtn");
     const status = document.getElementById("locationStatus");
 
-    // Check browser support
-    if (!navigator.geolocation) {
+    button.addEventListener("click", function () {
 
-        status.innerText =
-            "❌ Your browser does not support location services.";
-
-        return;
-    }
-
-    status.innerText =
-        "📍 Getting your current location...";
-
-    navigator.geolocation.getCurrentPosition(
-
-        function(position) {
-
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+        if (!navigator.geolocation) {
 
             status.innerText =
-                "✅ Location found! Opening nearby solar installers...";
+                "❌ Your browser does not support location services.";
 
-            // Google Maps nearby search
-            const mapsURL =
-                "https://www.google.com/maps/search/solar+panel+installers/@"
-                + latitude
-                + ","
-                + longitude
-                + ",14z";
-
-            window.open(
-                mapsURL,
-                "_blank"
-            );
-
-        },
-
-        function(error) {
-
-            console.error(
-                "Location error:",
-                error
-            );
-
-            if (error.code === 1) {
-
-                status.innerText =
-                    "❌ Location permission denied. Please allow location access.";
-
-            }
-
-            else if (error.code === 2) {
-
-                status.innerText =
-                    "❌ Unable to determine your location.";
-
-            }
-
-            else if (error.code === 3) {
-
-                status.innerText =
-                    "❌ Location request timed out. Try again.";
-
-            }
-
-            else {
-
-                status.innerText =
-                    "❌ Could not get your location.";
-
-            }
-
-        },
-
-        {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
+            return;
         }
 
-    );
+        status.innerText =
+            "📍 Getting your current location...";
 
-}
+        navigator.geolocation.getCurrentPosition(
+
+            function (position) {
+
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                console.log("Latitude:", latitude);
+                console.log("Longitude:", longitude);
+
+                status.innerText =
+                    "📍 Finding solar installers near you...";
+
+                const mapsURL =
+                    `https://www.google.com/maps/search/solar+panel+installers/@${latitude},${longitude},14z`;
+
+                window.open(mapsURL, "_blank");
+
+                status.innerText =
+                    "✅ Showing solar installers near you.";
+
+            },
+
+            function (error) {
+
+                console.error("Location error:", error);
+
+                if (error.code === 1) {
+
+                    status.innerText =
+                        "❌ Location permission denied. Please allow location access.";
+
+                } else {
+
+                    status.innerText =
+                        "❌ Could not get your current location.";
+
+                }
+
+            },
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+
+        );
+
+    });
+
+});
 
 </script>
 
