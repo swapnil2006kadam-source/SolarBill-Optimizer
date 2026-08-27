@@ -1,10 +1,24 @@
+# Virtual environment
 venv/
+.venv/
+
+# Environment variables
 .env
+
+# Python cache
 __pycache__/
 *.pyc
+
+# Generated PDF reports
+static/pdfs/
+
+# Uploaded bills
+static/uploads/
+
+# IDE files
 .vscode/
 .idea/
-database.sql
-database_aiven.sql
-database_clean.sql
-static/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
