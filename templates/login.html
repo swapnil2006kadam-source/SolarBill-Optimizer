@@ -24,10 +24,13 @@
             </p>
         </div>
 
+        <!-- LOGIN FORM -->
         <form method="POST">
 
             <!-- STEP CONTROL -->
-            <input type="hidden" name="step" value="{{ 'otp' if show_otp else 'login' }}">
+            <input type="hidden"
+                   name="step"
+                   value="{{ 'otp' if show_otp else 'login' }}">
 
             <!-- EMAIL -->
             <input
@@ -48,8 +51,9 @@
                 class="w-full p-3 bg-white/20 border border-white/30 text-white placeholder-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-yellow-400 outline-none"
                 required>
 
-            <!-- LOGIN BUTTON -->
+            <!-- GENERATE OTP -->
             <button
+                type="submit"
                 name="step"
                 value="login"
                 class="w-full bg-yellow-400 hover:bg-yellow-500 text-black p-3 rounded-lg font-semibold transition">
@@ -59,7 +63,9 @@
             {% else %}
 
             <!-- HIDDEN PASSWORD -->
-            <input type="hidden" name="password" value="{{ password }}">
+            <input type="hidden"
+                   name="password"
+                   value="{{ password }}">
 
             <!-- OTP BOX -->
             <div class="mt-5 bg-white/10 border border-white/20 p-4 rounded-xl">
@@ -68,6 +74,7 @@
                     📩 OTP sent to <b>{{ email }}</b>
                 </p>
 
+                <!-- OTP INPUT -->
                 <input
                     type="text"
                     name="otp"
@@ -76,8 +83,9 @@
                     class="w-full p-3 bg-white/20 border border-white/30 text-white placeholder-gray-300 rounded-lg text-center text-lg mb-3 focus:ring-2 focus:ring-green-400 outline-none"
                     required>
 
-                <!-- VERIFY BUTTON -->
+                <!-- VERIFY OTP -->
                 <button
+                    type="submit"
                     name="step"
                     value="otp"
                     class="w-full bg-green-500 hover:bg-green-600 text-white p-3 rounded-lg font-semibold transition">

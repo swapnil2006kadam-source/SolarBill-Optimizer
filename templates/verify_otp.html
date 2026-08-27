@@ -1,77 +1,89 @@
 {% extends "base.html" %}
 
+{% block title %}Verify OTP{% endblock %}
+
 {% block content %}
 
 <div class="min-h-screen flex items-center justify-center bg-slate-100">
 
-<div class="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-md text-center">
+    <div class="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-md text-center">
 
-<h1 class="text-2xl font-bold mb-2">Verify OTP</h1>
-<p class="text-gray-500 mb-6">Enter the 6-digit code</p>
+        <h1 class="text-2xl font-bold mb-2">
+            Verify OTP
+        </h1>
 
-<form method="POST" id="otpForm">
+        <p class="text-gray-500 mb-6">
+            Enter the 6-digit code
+        </p>
 
-<div class="flex justify-between gap-2 mb-6">
+        <form method="POST" id="otpForm">
 
-<input type="text" maxlength="1" class="otp-box" required>
-<input type="text" maxlength="1" class="otp-box" required>
-<input type="text" maxlength="1" class="otp-box" required>
-<input type="text" maxlength="1" class="otp-box" required>
-<input type="text" maxlength="1" class="otp-box" required>
-<input type="text" maxlength="1" class="otp-box" required>
+            <div class="flex justify-between gap-2 mb-6">
 
-</div>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
+                <input type="text" maxlength="1" class="otp-box" required>
 
-<input type="hidden" name="otp" id="otp">
+            </div>
 
-<button class="w-full bg-blue-600 text-white p-3 rounded-xl">
-Verify OTP
-</button>
+            <input type="hidden" name="otp" id="otp">
 
-</form>
+            <button class="w-full bg-blue-600 text-white p-3 rounded-xl">
+                Verify OTP
+            </button>
 
-<p class="mt-4 text-sm text-gray-500">
-OTP expires in <span id="timer">300</span>s
-</p>
+        </form>
 
-</div>
+        <p class="mt-4 text-sm text-gray-500">
+            OTP expires in <span id="timer">300</span>s
+        </p>
+
+    </div>
+
 </div>
 
 <style>
-.otp-box{
-width:45px;
-height:55px;
-text-align:center;
-font-size:20px;
-border:1px solid #ccc;
-border-radius:10px;
-}
+    .otp-box {
+        width: 45px;
+        height: 55px;
+        text-align: center;
+        font-size: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+    }
 </style>
 
 <script>
-const inputs=document.querySelectorAll(".otp-box")
-const hidden=document.getElementById("otp")
+    const inputs = document.querySelectorAll(".otp-box");
+    const hidden = document.getElementById("otp");
 
-inputs.forEach((input,index)=>{
-input.addEventListener("input",()=>{
-if(input.value.length===1 && index<5){
-inputs[index+1].focus()
-}
-})
-})
+    inputs.forEach((input, index) => {
+        input.addEventListener("input", () => {
+            if (input.value.length === 1 && index < 5) {
+                inputs[index + 1].focus();
+            }
+        });
+    });
 
-document.getElementById("otpForm").addEventListener("submit",()=>{
-let value=""
-inputs.forEach(i=>value+=i.value)
-hidden.value=value
-})
+    document.getElementById("otpForm").addEventListener("submit", () => {
+        let value = "";
 
-// Timer
-let time=300
-setInterval(()=>{
-time--
-document.getElementById("timer").innerText=time
-},1000)
+        inputs.forEach(input => {
+            value += input.value;
+        });
+
+        hidden.value = value;
+    });
+
+    let time = 300;
+
+    setInterval(() => {
+        time--;
+        document.getElementById("timer").innerText = time;
+    }, 1000);
 </script>
 
 {% endblock %}

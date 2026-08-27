@@ -1,27 +1,27 @@
 from database import get_connection
 
-def save_bill(user_id, user_name, bill, solar):
 
+def save_bill(user_id, user_name, bill, solar):
     conn = get_connection()
     cursor = conn.cursor()
 
     query = """
-    INSERT INTO bill_history (
-        user_id,
-        user_name,
-        ca_number,
-        bill_month,
-        units,
-        bill_amount,
-        solar_kw,
-        monthly_savings,
-        yearly_savings,
-        subsidy,
-        installation_cost,
-        final_cost,
-        roi
-    )
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        INSERT INTO bill_history (
+            user_id,
+            user_name,
+            ca_number,
+            bill_month,
+            units,
+            bill_amount,
+            solar_kw,
+            monthly_savings,
+            yearly_savings,
+            subsidy,
+            installation_cost,
+            final_cost,
+            roi
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
 
     values = (
@@ -41,7 +41,6 @@ def save_bill(user_id, user_name, bill, solar):
     )
 
     cursor.execute(query, values)
-
     conn.commit()
 
     cursor.close()

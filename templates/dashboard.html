@@ -6,460 +6,557 @@
 
 <div class="min-h-screen bg-gray-100">
 
-<!-- NAVBAR -->
-<nav class="bg-gradient-to-r from-slate-800 to-blue-700 shadow-lg sticky top-0 z-50">
-
-    <div class="max-w-7xl mx-auto flex justify-between items-center px-8 py-5">
-
-        <!-- BRAND -->
-        <h1 class="text-3xl font-bold text-yellow-400">
-            ☀ SolarBill Optimizer
-        </h1>
-
-
-        <!-- NAVIGATION -->
-        <div class="flex items-center gap-10">
-
-            <a href="/dashboard"
-               class="text-yellow-400 font-semibold">
-                Dashboard
-            </a>
-
-            <a href="/reports"
-               class="text-white hover:text-yellow-400 transition">
-                Reports
-            </a>
-
-            <a href="/about"
-               class="text-white hover:text-yellow-400 transition">
-                About
-            </a>
-
-            <a href="/logout"
-               class="text-red-300 hover:text-red-500 transition">
-                Logout
-            </a>
-
-
-            <!-- WEATHER -->
-            <span class="text-white">
-                ☀ {{ weather.temp if weather else 32 }}°C
-            </span>
-
-
-            <!-- PROFILE CIRCLE -->
-            <a href="/profile"
-               title="Profile"
-               class="w-11 h-11 rounded-full
-                      bg-yellow-400
-                      text-black
-                      flex items-center justify-center
-                      font-bold text-lg
-                      hover:bg-yellow-300
-                      hover:scale-105
-                      transition">
-
-                {{ username[0]|upper }}
-
-            </a>
-
-        </div>
-
-    </div>
-
-</nav>
-
-
-<div class="max-w-7xl mx-auto px-6 py-10">
-
-<h1 class="text-4xl font-bold">
-    Welcome, <span class="text-yellow-500">{{ username }}</span> 👋
-</h1>
-
-<p class="text-gray-600 mt-2">
-    Analyze your electricity bill & solar savings.
-</p>
-
-
-<!-- UPLOAD -->
-<div class="bg-white rounded-2xl shadow-md p-6 mt-6">
-<form action="/upload_bill" method="POST" enctype="multipart/form-data">
-
-    <div class="flex justify-between items-center">
-
-        <div>
-            <h2 class="text-xl font-bold">📄 Upload Electricity Bill</h2>
-        </div>
-
-        <div class="flex gap-3">
-            <input type="file" name="bill" accept=".pdf" class="border rounded-lg p-2">
-            <button class="bg-blue-600 text-white px-5 py-2 rounded-lg">
-                Upload
-            </button>
-        </div>
-
-    </div>
-
-</form>
-</div>
-
-
-<!-- TOP CARDS -->
-<div class="grid lg:grid-cols-4 md:grid-cols-2 gap-6 mt-6">
-
-    <div class="bg-white p-6 rounded-2xl shadow">
-        <p class="text-gray-500">Monthly Bill</p>
-        <h2 class="text-2xl font-bold">
-            ₹{{ bill.bill_amount if bill else "0" }}
-        </h2>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow">
-        <p class="text-gray-500">Units</p>
-        <h2 class="text-2xl font-bold">
-            {{ bill.units if bill else "0" }}
-        </h2>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow">
-        <p class="text-gray-500">Month</p>
-        <h2 class="text-2xl font-bold">
-            {{ bill.bill_month if bill else "--" }}
-        </h2>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow">
-        <p class="text-gray-500">CA Number</p>
-        <h2 class="text-xl font-bold">
-            {{ bill.ca_number if bill else "--" }}
-        </h2>
-    </div>
-
-</div>
-
-
-<!-- ========================================================= -->
-<!--                    MAIN SOLAR SECTION                     -->
-<!-- ========================================================= -->
-
-<div class="grid lg:grid-cols-2 gap-6 mt-10 items-start">
-
-    <!-- ===================================================== -->
-    <!--                     LEFT COLUMN                       -->
-    <!-- ===================================================== -->
-
-    <div class="space-y-6">
-
-        <!-- ================= SOLAR CALCULATOR ================= -->
-
-        <div class="bg-white p-8 rounded-3xl shadow-xl">
-
-            <h2 class="text-2xl font-bold mb-6 text-center">
-                ☀️ Solar Calculator
-            </h2>
-
-            <form action="/calculate" method="POST" class="space-y-4">
-
-                <input
-                    type="number"
-                    name="bill"
-                    step="any"
-                    placeholder="Monthly Bill ₹"
-                    class="w-full p-3 border rounded-xl"
-                    required
-                >
-
-                <input
-                    type="number"
-                    name="units"
-                    step="any"
-                    placeholder="Units"
-                    class="w-full p-3 border rounded-xl"
-                    required
-                >
-
-                <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    class="w-full p-3 border rounded-xl"
-                    required
-                >
-
-                <button
-                    type="submit"
-                    class="w-full bg-green-500 hover:bg-green-600
-                           text-white p-3 rounded-xl font-semibold
-                           transition"
-                >
-                    ⚡ Calculate
-                </button>
-
-            </form>
-
-        </div>
-
-
-        <!-- ================= SOLAR AI ASSISTANT ================= -->
-
-        <div class="bg-white p-6 rounded-3xl shadow-xl">
-
-            <!-- Header -->
-
-            <div class="flex items-center gap-3 mb-4">
-
-                <div class="text-3xl">
-                    🤖
-                </div>
-
-                <div>
-
-                    <h2 class="text-2xl font-bold">
-                        Solar AI Assistant
-                    </h2>
-
-                    <p class="text-gray-500 text-sm">
-                        Ask me anything about solar energy
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- AI RESPONSE -->
-
-            <div
-                id="aiResponse"
-                class="hidden mb-4 p-5 bg-gray-50
-                       border rounded-2xl"
-            >
-
-                <div class="font-semibold mb-2">
-                    🤖 Solar AI
-                </div>
-
-                <div
-                    id="aiAnswer"
-                    class="text-gray-700 whitespace-pre-line"
-                >
-                </div>
-
-            </div>
-
-
-            <!-- QUESTION FORM -->
-
-            <form id="solarAIForm">
-
-                <div class="flex gap-3">
-
-                    <input
-                        type="text"
-                        id="solarQuestion"
-                        name="question"
-                        placeholder="Ask about panels, subsidy, cost, ROI..."
-                        class="flex-1 p-4 border rounded-xl
-                               focus:outline-none
-                               focus:ring-2 focus:ring-blue-500"
-                        required
-                    >
-
-                    <button
-                        type="submit"
-                        id="aiButton"
-                        class="bg-blue-600 hover:bg-blue-700
-                               text-white px-6 rounded-xl
-                               font-semibold transition"
-                    >
-                        Ask AI
-                    </button>
-
-                </div>
-
-            </form>
-
-
-            <!-- SUGGESTED QUESTIONS -->
-
-            <div class="flex flex-wrap gap-2 mt-4">
-
-                <button
-                    type="button"
-                    onclick="askQuestion(
-                        'How much electricity can a 2 kW solar system generate?'
-                    )"
-                    class="px-3 py-2 bg-gray-100
-                           rounded-lg text-sm
-                           hover:bg-gray-200"
-                >
-                    ☀️ 2 kW generation
-                </button>
-
-
-                <button
-                    type="button"
-                    onclick="askQuestion(
-                        'What solar subsidy is available in India?'
-                    )"
-                    class="px-3 py-2 bg-gray-100
-                           rounded-lg text-sm
-                           hover:bg-gray-200"
-                >
-                    💰 Solar subsidy
-                </button>
-
-
-                <button
-                    type="button"
-                    onclick="askQuestion(
-                        'How long does a solar panel last?'
-                    )"
-                    class="px-3 py-2 bg-gray-100
-                           rounded-lg text-sm
-                           hover:bg-gray-200"
-                >
-                    🔧 Panel lifespan
-                </button>
-
-
-                <button
-                    type="button"
-                    onclick="askQuestion(
-                        'How can I reduce my electricity bill using solar?'
-                    )"
-                    class="px-3 py-2 bg-gray-100
-                           rounded-lg text-sm
-                           hover:bg-gray-200"
-                >
-                    💡 Reduce bill
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <!-- ================= LIVE WEATHER ================= -->
-
-        <div class="bg-white p-6 rounded-3xl shadow-xl">
-
-            <!-- Weather Header -->
-
-            <div class="flex justify-between items-center mb-5">
-
-                <div>
-
-                    <h2 class="text-2xl font-bold">
-                        🌤️ {{ weather.city if weather else "Mumbai" }}
-                    </h2>
-
-                    <p class="text-gray-500 text-sm">
-                        Live Weather • Solar Generation Conditions
-                    </p>
-
-                </div>
-
-                <span class="text-sm text-gray-500">
-                    🔄 Live
+    <!-- ================= NAVBAR ================= -->
+    <nav class="bg-gradient-to-r from-slate-800 to-blue-700 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-8 py-5">
+
+            <h1 class="text-3xl font-bold text-yellow-400">
+                ☀ SolarBill Optimizer
+            </h1>
+
+            <div class="flex items-center gap-8">
+
+                <a href="/dashboard" class="text-yellow-400 font-semibold">
+                    Dashboard
+                </a>
+
+                <a href="/reports" class="text-white hover:text-yellow-400 transition">
+                    Reports
+                </a>
+
+                <a href="/about" class="text-white hover:text-yellow-400 transition">
+                    About
+                </a>
+
+                <a href="/logout" class="text-red-300 hover:text-red-500 transition">
+                    Logout
+                </a>
+
+                <!-- WEATHER -->
+                <span class="text-white">
+                    ☀ {{ weather.temp if weather else 32 }}°C
                 </span>
 
+                <!-- PROFILE -->
+                <a href="/profile"
+                   title="Profile"
+                   class="w-11 h-11 rounded-full bg-yellow-400 text-black
+                          flex items-center justify-center font-bold text-lg
+                          hover:bg-yellow-300 hover:scale-105 transition">
+                    {{ username[0]|upper }}
+                </a>
+
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ================= MAIN CONTAINER ================= -->
+    <div class="max-w-7xl mx-auto px-6 py-10">
+
+        <!-- WELCOME -->
+        <h1 class="text-4xl font-bold">
+            Welcome, <span class="text-yellow-500">{{ username }}</span> 👋
+        </h1>
+
+        <p class="text-gray-600 mt-2">
+            Analyze your electricity bill & solar savings.
+        </p>
+
+
+        <!-- ================= FLASH MESSAGES ================= -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mt-5 space-y-2">
+                    {% for message in messages %}
+                        <div class="bg-blue-50 border border-blue-200 text-blue-700
+                                    px-4 py-3 rounded-xl">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+
+        <!-- ================= UPLOAD BILL ================= -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mt-6">
+
+            <form action="/upload_bill"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                <div class="flex flex-col md:flex-row
+                            justify-between items-center gap-4">
+
+                    <div>
+                        <h2 class="text-xl font-bold">
+                            📄 Upload Electricity Bill
+                        </h2>
+
+                        <p class="text-sm text-gray-500 mt-1">
+                            Upload your electricity bill PDF for automatic analysis.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3 items-center">
+
+                        <input type="file"
+                               name="bill"
+                               accept=".pdf"
+                               class="border rounded-lg p-2"
+                               required>
+
+                        <button type="submit"
+                                class="bg-blue-600 hover:bg-blue-700
+                                       text-white px-5 py-2 rounded-lg">
+                            Upload
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+
+        <!-- ================= BILL CARDS ================= -->
+        <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-6 mt-6">
+
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-gray-500">Monthly Bill</p>
+                <h2 class="text-2xl font-bold mt-2">
+                    ₹{{ "%.2f"|format(bill.bill_amount if bill else 0) }}
+                </h2>
             </div>
 
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-gray-500">Units</p>
+                <h2 class="text-2xl font-bold mt-2">
+                    {{ bill.units if bill else 0 }}
+                </h2>
+            </div>
 
-            {% if weather %}
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-gray-500">Month</p>
+                <h2 class="text-2xl font-bold mt-2">
+                    {{ bill.bill_month if bill else "--" }}
+                </h2>
+            </div>
 
-            <!-- Weather Cards -->
+            <div class="bg-white p-6 rounded-2xl shadow">
+                <p class="text-gray-500">CA Number</p>
+                <h2 class="text-xl font-bold mt-2 break-all">
+                    {{ bill.ca_number if bill else "--" }}
+                </h2>
+            </div>
 
-            <div class="grid grid-cols-3 gap-3">
+        </div>
 
 
-                <!-- TEMPERATURE -->
+        <!-- ================= MAIN GRID ================= -->
+        <div class="grid lg:grid-cols-2 gap-6 mt-10 items-start">
 
-                <div
-                    class="p-4 bg-gray-50
-                           border rounded-2xl"
-                >
 
-                    <p class="text-3xl font-bold">
-                        {{ weather.temp }}°C
-                    </p>
+            <!-- ================================================= -->
+            <!-- LEFT COLUMN -->
+            <!-- ================================================= -->
 
-                    <p class="text-gray-500 text-sm mt-1">
-                        Feels like
-                    </p>
+            <div class="space-y-6">
 
-                    <p class="text-gray-600">
-                        {{ weather.feels_like }}°C
-                    </p>
+
+                <!-- ================= SOLAR CALCULATOR ================= -->
+                <div class="bg-white p-8 rounded-3xl shadow-xl">
+
+                    <h2 class="text-2xl font-bold mb-6 text-center">
+                        ☀️ Solar Calculator
+                    </h2>
+
+                    <form action="/calculate"
+                          method="POST"
+                          class="space-y-4">
+
+                        <input type="number"
+                               name="bill"
+                               step="any"
+                               min="0"
+                               placeholder="Monthly Bill ₹"
+                               class="w-full p-3 border rounded-xl"
+                               required>
+
+                        <input type="number"
+                               name="units"
+                               step="any"
+                               min="0"
+                               placeholder="Electricity Units"
+                               class="w-full p-3 border rounded-xl"
+                               required>
+
+                        <input type="text"
+                               name="city"
+                               placeholder="City"
+                               class="w-full p-3 border rounded-xl"
+                               required>
+
+                        <button type="submit"
+                                class="w-full bg-green-500 hover:bg-green-600
+                                       text-white p-3 rounded-xl font-semibold
+                                       transition">
+                            ⚡ Calculate Solar Recommendation
+                        </button>
+
+                    </form>
 
                 </div>
 
 
-                <!-- CONDITION -->
+                <!-- ================= SOLAR AI ================= -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl">
 
-                <div
-                    class="p-4 bg-gray-50
-                           border rounded-2xl"
-                >
+                    <div class="flex items-center gap-3 mb-4">
 
-                    <p class="text-gray-500 text-sm">
-                        Current Condition
-                    </p>
+                        <div class="text-3xl">
+                            🤖
+                        </div>
 
-                    <p class="text-xl font-bold mt-2">
-                        {{ weather.condition }}
-                    </p>
+                        <div>
+                            <h2 class="text-2xl font-bold">
+                                Solar AI Assistant
+                            </h2>
 
-                    <p class="text-blue-500 text-sm mt-2">
-                        ☁️ Weather
-                    </p>
+                            <p class="text-gray-500 text-sm">
+                                Ask me anything about solar energy
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- AI RESPONSE -->
+                    <div id="aiResponse"
+                         class="hidden mb-4 p-5 bg-gray-50 border rounded-2xl">
+
+                        <div class="font-semibold mb-2">
+                            🤖 Solar AI
+                        </div>
+
+                        <div id="aiAnswer"
+                             class="text-gray-700 whitespace-pre-line">
+                        </div>
+
+                    </div>
+
+
+                    <!-- AI FORM -->
+                    <form id="solarAIForm">
+
+                        <div class="flex gap-3">
+
+                            <input type="text"
+                                   id="solarQuestion"
+                                   name="question"
+                                   placeholder="Ask about panels, subsidy, cost, ROI..."
+                                   class="flex-1 p-4 border rounded-xl
+                                          focus:outline-none
+                                          focus:ring-2 focus:ring-blue-500"
+                                   required>
+
+                            <button type="submit"
+                                    id="aiButton"
+                                    class="bg-blue-600 hover:bg-blue-700
+                                           text-white px-6 rounded-xl
+                                           font-semibold transition">
+                                Ask AI
+                            </button>
+
+                        </div>
+
+                    </form>
+
+
+                    <!-- SUGGESTED QUESTIONS -->
+                    <div class="flex flex-wrap gap-2 mt-4">
+
+                        <button type="button"
+                                onclick="askQuestion('How much electricity can a 2 kW solar system generate?')"
+                                class="px-3 py-2 bg-gray-100 rounded-lg text-sm
+                                       hover:bg-gray-200">
+                            ☀️ 2 kW generation
+                        </button>
+
+                        <button type="button"
+                                onclick="askQuestion('What solar subsidy is available in India?')"
+                                class="px-3 py-2 bg-gray-100 rounded-lg text-sm
+                                       hover:bg-gray-200">
+                            💰 Solar subsidy
+                        </button>
+
+                        <button type="button"
+                                onclick="askQuestion('How long does a solar panel last?')"
+                                class="px-3 py-2 bg-gray-100 rounded-lg text-sm
+                                       hover:bg-gray-200">
+                            🔧 Panel lifespan
+                        </button>
+
+                        <button type="button"
+                                onclick="askQuestion('How can I reduce my electricity bill using solar?')"
+                                class="px-3 py-2 bg-gray-100 rounded-lg text-sm
+                                       hover:bg-gray-200">
+                            💡 Reduce bill
+                        </button>
+
+                    </div>
 
                 </div>
 
 
-                <!-- SOLAR IMPACT -->
+                <!-- ================= LIVE WEATHER ================= -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl">
 
-                <div
-                    class="p-4 bg-gray-50
-                           border rounded-2xl"
-                >
+                    <div class="flex justify-between items-center mb-5">
 
-                    <p class="text-gray-500 text-sm">
-                        Solar Impact
-                    </p>
+                        <div>
+                            <h2 class="text-2xl font-bold">
+                                🌤️ {{ weather.city if weather else "Mumbai" }}
+                            </h2>
 
-                    {% if weather.condition|lower in
-                          ['rain', 'drizzle', 'thunderstorm'] %}
+                            <p class="text-gray-500 text-sm">
+                                Live Weather • Solar Generation Conditions
+                            </p>
+                        </div>
 
-                        <p class="text-xl font-bold mt-2 text-red-500">
-                            Low
-                        </p>
+                        <span class="text-sm text-gray-500">
+                            🔄 Live
+                        </span>
 
-                        <p class="text-gray-500 text-sm mt-1">
-                            🌧️ Cloudy/rainy weather may reduce
-                            solar generation.
-                        </p>
+                    </div>
 
-                    {% elif weather.condition|lower in
-                            ['clouds', 'overcast'] %}
 
-                        <p class="text-xl font-bold mt-2 text-yellow-500">
-                            Moderate
-                        </p>
+                    {% if weather %}
 
-                        <p class="text-gray-500 text-sm mt-1">
-                            ⛅ Solar generation may be reduced.
-                        </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                        <!-- TEMPERATURE -->
+                        <div class="p-4 bg-gray-50 border rounded-2xl">
+
+                            <p class="text-3xl font-bold">
+                                {{ weather.temp }}°C
+                            </p>
+
+                            <p class="text-gray-500 text-sm mt-1">
+                                Current Temperature
+                            </p>
+
+                        </div>
+
+
+                        <!-- CONDITION -->
+                        <div class="p-4 bg-gray-50 border rounded-2xl">
+
+                            <p class="text-gray-500 text-sm">
+                                Current Condition
+                            </p>
+
+                            <p class="text-xl font-bold mt-2">
+                                {{ weather.condition }}
+                            </p>
+
+                            <p class="text-blue-500 text-sm mt-2">
+                                ☁️ Weather
+                            </p>
+
+                        </div>
+
+
+                        <!-- SOLAR IMPACT -->
+                        <div class="p-4 bg-gray-50 border rounded-2xl">
+
+                            <p class="text-gray-500 text-sm">
+                                Solar Impact
+                            </p>
+
+                            {% if weather.condition|lower in
+                                  ['rain', 'drizzle', 'thunderstorm'] %}
+
+                                <p class="text-xl font-bold mt-2 text-red-500">
+                                    Low
+                                </p>
+
+                                <p class="text-gray-500 text-sm mt-1">
+                                    🌧️ Rainy weather may reduce solar generation.
+                                </p>
+
+                            {% elif weather.condition|lower in
+                                  ['clouds', 'overcast'] %}
+
+                                <p class="text-xl font-bold mt-2 text-yellow-500">
+                                    Moderate
+                                </p>
+
+                                <p class="text-gray-500 text-sm mt-1">
+                                    ⛅ Cloudy weather may reduce solar generation.
+                                </p>
+
+                            {% else %}
+
+                                <p class="text-xl font-bold mt-2 text-green-600">
+                                    Good
+                                </p>
+
+                                <p class="text-gray-500 text-sm mt-1">
+                                    ☀️ Good conditions for solar generation.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
 
                     {% else %}
 
-                        <p class="text-xl font-bold mt-2 text-green-600">
-                            Good
-                        </p>
+                    <p class="text-gray-500">
+                        Weather information unavailable.
+                    </p>
 
-                        <p class="text-gray-500 text-sm mt-1">
-                            ☀️ Good conditions for solar generation.
+                    {% endif %}
+
+                </div>
+
+
+                <!-- ================= SOLAR GUIDANCE ================= -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl">
+
+                    <h2 class="text-2xl font-bold mb-5">
+                        ☀ Solar Guidance
+                    </h2>
+
+                    <p class="mb-4">
+
+                        <b>Recommended System:</b>
+
+                        <span class="text-blue-600 font-semibold">
+                            {{ solar.solar_kw if solar else "-" }} kW
+                        </span>
+
+                    </p>
+
+
+                    {% if solar and solar.guidance %}
+
+                        <!-- COMPANIES -->
+                        <h3 class="text-lg font-bold mb-3">
+                            🏢 Compare Solar Companies
+                        </h3>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+
+                            {% for c in solar.guidance.companies %}
+
+                            <div class="border rounded-xl p-4 bg-gray-50">
+
+                                <div class="flex justify-between items-center gap-3">
+
+                                    <div>
+
+                                        <p class="font-semibold">
+                                            {{ c.name }}
+                                        </p>
+
+                                        <p class="text-yellow-500 text-sm">
+                                            ⭐ {{ c.rating }} / 5
+                                        </p>
+
+                                    </div>
+
+                                    <a href="{{ c.link }}"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       class="bg-blue-600 hover:bg-blue-700
+                                              text-white px-4 py-2 rounded-lg">
+                                        Visit ↗
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+
+
+                        <!-- FIND INSTALLERS -->
+                        <div class="mt-5 p-4 bg-gray-50 rounded-xl border">
+
+                            <div class="flex justify-between items-center gap-4">
+
+                                <div>
+
+                                    <p class="font-bold text-lg">
+                                        📍 Find Solar Installers
+                                    </p>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Find installers near your current location.
+                                    </p>
+
+                                </div>
+
+                                <button id="findInstallersBtn"
+                                        type="button"
+                                        class="bg-blue-600 hover:bg-blue-700
+                                               text-white px-4 py-3 rounded-xl
+                                               font-semibold">
+                                    📍 Find Near Me
+                                </button>
+
+                            </div>
+
+                            <p id="locationStatus"
+                               class="text-sm text-gray-500 mt-3">
+                            </p>
+
+                        </div>
+
+
+                        <!-- GOVERNMENT SCHEME -->
+                        <div class="mt-5 p-4 bg-gray-50 rounded-xl border">
+
+                            <div class="flex justify-between items-center gap-4">
+
+                                <div>
+
+                                    <p class="font-bold text-lg">
+                                        🏛 Government Scheme
+                                    </p>
+
+                                    <p class="text-gray-600">
+                                        {{ solar.guidance.scheme.name }}
+                                    </p>
+
+                                </div>
+
+                                <a href="{{ solar.guidance.scheme.link }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="bg-green-500 hover:bg-green-600
+                                          text-white px-4 py-3 rounded-xl
+                                          font-semibold">
+                                    Apply Now ↗
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    {% else %}
+
+                        <p class="text-gray-500">
+                            No guidance available yet.
+                            Calculate to see recommendations.
                         </p>
 
                     {% endif %}
@@ -468,1096 +565,932 @@
 
             </div>
 
-            {% else %}
 
-                <p class="text-gray-500">
-                    Weather information unavailable.
-                </p>
+            <!-- ================================================= -->
+            <!-- RIGHT COLUMN -->
+            <!-- ================================================= -->
 
-            {% endif %}
-
-        </div>
-
-        <!-- ================= SOLAR GUIDANCE ================= -->
-
-        <div class="bg-white p-6 rounded-3xl shadow-xl">
-
-            <h2 class="text-2xl font-bold mb-5">
-                ☀ Solar Guidance
-            </h2>
+            <div class="space-y-6">
 
 
-            <p class="mb-4">
+                <!-- ================= SOLAR RECOMMENDATION ================= -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl">
 
-                <b>
-                    Recommended System:
-                </b>
+                    <p class="mb-3 text-gray-600">
+                        This recommendation is based on your monthly electricity usage.
+                    </p>
 
-                <span class="text-blue-600 font-semibold">
-                    {{ solar.solar_kw if solar else "-" }} kW
-                </span>
-
-            </p>
-
-
-            {% if solar and solar.guidance %}
+                    <h2 class="text-2xl font-bold mb-6">
+                        ☀ Solar Recommendation
+                    </h2>
 
 
-            <!-- COMPANIES -->
+                    <div class="space-y-4">
 
-            <h3 class="text-lg font-bold mb-3">
-                🏢 Compare Solar Companies
-            </h3>
+                        <!-- SYSTEM -->
+                        <div class="flex justify-between">
+                            <span>System</span>
+
+                            <span class="text-blue-600 font-bold">
+                                {{ solar.solar_kw if solar else "-" }} kW
+                            </span>
+                        </div>
 
 
-            <div class="grid md:grid-cols-2 gap-4">
+                        <!-- MONTHLY SAVING -->
+                        <div class="flex justify-between">
+                            <span>Monthly Saving</span>
 
-                {% for c in solar.guidance.companies %}
+                            <span class="text-green-600 font-bold">
+                                ₹{{ "%.2f"|format(
+                                    solar.monthly_savings
+                                    if solar else 0
+                                ) }}
+                            </span>
+                        </div>
 
-                <div
-                    class="border rounded-xl p-4
-                           bg-gray-50"
-                >
 
-                    <div
-                        class="flex justify-between
-                               items-center"
-                    >
-
+                        <!-- ELECTRICITY RATE -->
                         <div>
 
-                            <p class="font-semibold">
-                                {{ c.name }}
-                            </p>
+                            <div class="flex justify-between items-center">
 
-                            <p class="text-yellow-500 text-sm">
-                                ⭐ {{ c.rating }} / 5
+                                <span>
+                                    Effective Electricity Rate
+                                </span>
+
+                                <span class="text-blue-600 font-bold">
+                                    ₹{{ "%.2f"|format(
+                                        solar.electricity_rate
+                                        if solar and solar.electricity_rate is defined
+                                        else 0
+                                    ) }}/unit
+                                </span>
+
+                            </div>
+
+                            <p class="text-xs text-gray-500 mt-1">
+                                Calculated from your current bill and units consumed.
                             </p>
 
                         </div>
 
 
-                        <a
-                            href="{{ c.link }}"
-                            target="_blank"
-                            class="bg-blue-600
-                                   hover:bg-blue-700
-                                   text-white px-4 py-2
-                                   rounded-lg"
-                        >
-                            Visit ↗
-                        </a>
+                        <!-- YEARLY SAVING -->
+                        <div class="flex justify-between">
+
+                            <span>
+                                Yearly Saving
+                            </span>
+
+                            <span class="text-blue-600 font-bold">
+                                ₹{{ "%.2f"|format(
+                                    solar.yearly_savings
+                                    if solar else 0
+                                ) }}
+                            </span>
+
+                        </div>
+
+
+                        <!-- ================= 25 YEAR IMPACT ================= -->
+                        <div class="mt-6">
+
+                            <h3 class="text-lg font-bold mb-4">
+                                🌱 25-Year Solar Impact
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                                <div class="bg-purple-50 rounded-2xl p-4 text-center">
+
+                                    <div class="text-2xl mb-1">
+                                        📅
+                                    </div>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Estimated Period
+                                    </p>
+
+                                    <p class="text-xl font-bold text-purple-600">
+
+                                        {{ solar.lifetime_years
+                                           if solar and solar.lifetime_years is defined
+                                           else 25 }}
+
+                                        Years
+
+                                    </p>
+
+                                </div>
+
+
+                                <div class="bg-blue-50 rounded-2xl p-4 text-center">
+
+                                    <div class="text-2xl mb-1">
+                                        ☀️
+                                    </div>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Solar Generation
+                                    </p>
+
+                                    <p class="text-xl font-bold text-blue-600">
+
+                                        {{ "%.0f"|format(
+                                            solar.lifetime_generation
+                                            if solar and solar.lifetime_generation is defined
+                                            else 0
+                                        ) }}
+
+                                        kWh
+
+                                    </p>
+
+                                </div>
+
+
+                                <div class="bg-green-50 rounded-2xl p-4 text-center">
+
+                                    <div class="text-2xl mb-1">
+                                        💰
+                                    </div>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Estimated Savings
+                                    </p>
+
+                                    <p class="text-xl font-bold text-green-600">
+
+                                        ₹{{ "{:,.0f}".format(
+                                            solar.lifetime_savings
+                                            if solar and solar.lifetime_savings is defined
+                                            else 0
+                                        ) }}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <p class="text-xs text-gray-500 mt-3">
+                                ⚠️ 25-year figures are estimates based on current
+                                solar generation and electricity-rate assumptions.
+                                Actual results may vary.
+                            </p>
+
+                        </div>
+
+
+                        <!-- ================= SOLAR GENERATION ================= -->
+                        <div class="mt-6">
+
+                            <h3 class="text-lg font-bold mb-4">
+                                ☀️ Estimated Solar Generation
+                            </h3>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                                <!-- DAILY -->
+                                <div class="bg-yellow-50 rounded-2xl p-4 text-center">
+
+                                    <div class="text-2xl mb-1">
+                                        ☀️
+                                    </div>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Daily
+                                    </p>
+
+                                    <p class="text-xl font-bold text-yellow-600">
+
+                                        {{ "%.2f"|format(
+                                            solar.daily_generation
+                                            if solar else 0
+                                        ) }}
+
+                                        kWh
+
+                                    </p>
+
+                                </div>
+
+
+                                <!-- MONTHLY -->
+                                <div class="bg-blue-50 rounded-2xl p-4 text-center">
+
+                                    <div class="text-2xl mb-1">
+                                        📅
+                                    </div>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Monthly
+                                    </p>
+
+                                    <p class="text-xl font-bold text-blue-600">
+
+                                        {{ "%.2f"|format(
+                                            solar.monthly_generation
+                                            if solar else 0
+                                        ) }}
+
+                                        kWh
+
+                                    </p>
+
+                                </div>
+
+
+                                <!-- YEARLY -->
+                                <div class="bg-green-50 rounded-2xl p-4 text-center">
+
+                                    <div class="text-2xl mb-1">
+                                        📈
+                                    </div>
+
+                                    <p class="text-gray-500 text-sm">
+                                        Yearly
+                                    </p>
+
+                                    <p class="text-xl font-bold text-green-600">
+
+                                        {{ "%.2f"|format(
+                                            solar.yearly_generation
+                                            if solar else 0
+                                        ) }}
+
+                                        kWh
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= COST BREAKDOWN ================= -->
+                        <div class="mt-6">
+
+                            <h3 class="text-lg font-bold mb-4">
+                                💰 Solar Cost Breakdown
+                            </h3>
+
+
+                            <div class="flex justify-between items-center mb-3">
+
+                                <span class="text-gray-600">
+                                    Estimated System Cost
+                                </span>
+
+                                <span class="font-bold text-red-500">
+
+                                    ₹{{ "%.2f"|format(
+                                        solar.installation_cost
+                                        if solar else 0
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="flex justify-between items-center mb-3">
+
+                                <span class="text-gray-600">
+                                    Central Subsidy
+                                </span>
+
+                                <span class="font-bold text-yellow-500">
+
+                                    - ₹{{ "%.2f"|format(
+                                        solar.subsidy
+                                        if solar else 0
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+
+                            <hr class="my-4">
+
+
+                            <div class="flex justify-between items-center">
+
+                                <span class="font-bold">
+                                    Estimated Final Cost
+                                </span>
+
+                                <span class="text-green-600 font-bold text-xl">
+
+                                    ₹{{ "%.2f"|format(
+                                        solar.final_cost
+                                        if solar else 0
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ================= ROI ================= -->
+                        <div class="flex justify-between">
+
+                            <span>
+                                Estimated Payback
+                            </span>
+
+                            <span class="text-purple-600 font-bold">
+                                {{ solar.roi if solar else "-" }} yrs
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ================= BEFORE / AFTER ================= -->
+                    <div class="mt-8 bg-gray-50 rounded-2xl p-5">
+
+                        <h3 class="text-lg font-bold mb-4">
+                            💰 Bill Before vs After Solar
+                        </h3>
+
+                        <div class="space-y-3">
+
+                            <div class="flex justify-between items-center">
+
+                                <span class="text-gray-600">
+                                    Current Bill
+                                </span>
+
+                                <span class="font-bold text-red-500">
+
+                                    ₹{{ "%.2f"|format(
+                                        solar.bill_before_solar
+                                        if solar and solar.bill_before_solar is defined
+                                        else 0
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="flex justify-between items-center">
+
+                                <span class="text-gray-600">
+                                    Estimated After Solar
+                                </span>
+
+                                <span class="font-bold text-green-600">
+
+                                    ₹{{ "%.2f"|format(
+                                        solar.estimated_bill_after_solar
+                                        if solar and solar.estimated_bill_after_solar is defined
+                                        else 0
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="flex justify-between items-center">
+
+                                <span class="text-gray-600">
+                                    Monthly Saving
+                                </span>
+
+                                <span class="font-bold text-blue-600">
+
+                                    ₹{{ "%.2f"|format(
+                                        solar.monthly_savings
+                                        if solar and solar.monthly_savings is defined
+                                        else 0
+                                    ) }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="flex justify-between items-center">
+
+                                <span class="text-gray-600">
+                                    Estimated Reduction
+                                </span>
+
+                                <span class="font-bold text-green-600">
+
+                                    {{ solar.bill_reduction_percent
+                                       if solar and solar.bill_reduction_percent is defined
+                                       else 0 }}%
+
+                                </span>
+
+                            </div>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-                {% endfor %}
 
-            </div>
+                <!-- ================= DATA SOURCES ================= -->
+                <div class="bg-white p-6 rounded-3xl shadow-xl">
 
+                    <h3 class="text-lg font-bold mb-3">
+                        📌 Data Sources & Important Note
+                    </h3>
 
-            <!-- FIND INSTALLERS -->
+                    <div class="space-y-3 text-sm text-gray-600">
 
-            <div
-                class="mt-5 p-4 bg-gray-50
-                       rounded-xl border"
-            >
-
-                <div
-                    class="flex justify-between
-                           items-center"
-                >
-
-                    <div>
-
-                        <p class="font-bold text-lg">
-                            📍 Find Solar Installers
+                        <p>
+                            <strong>Official Data Sources:</strong>
                         </p>
 
-                        <p class="text-gray-500 text-sm">
-                            Find installers near your
-                            current location
+                        <ul class="list-disc ml-5 space-y-1">
+
+                            <li>
+                                <a href="https://pmsuryaghar.gov.in/"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-blue-600 hover:underline">
+                                    PM Surya Ghar Muft Bijli Yojana
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="https://mnre.gov.in/"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-blue-600 hover:underline">
+                                    Ministry of New and Renewable Energy (MNRE)
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="https://www.mahadiscom.in/ismart/"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="text-blue-600 hover:underline">
+                                    MSEDCL I-SMART
+                                </a>
+                            </li>
+
+                        </ul>
+
+
+                        <p class="pt-2">
+
+                            <strong>⚠️ Estimated Results:</strong>
+
+                            Solar generation, electricity savings,
+                            installation cost, final cost and ROI shown
+                            by SolarBill Optimizer are estimates.
+
+                            Actual results may vary depending on
+                            electricity tariff, sunlight, roof conditions,
+                            system configuration, vendor pricing,
+                            applicable charges and government/DISCOM rules.
+
+                        </p>
+
+
+                        <p>
+
+                            Subsidy and official scheme information may
+                            change. Always verify the latest information
+                            with the official government or DISCOM portal
+                            before making a purchase or installation decision.
+
+                        </p>
+
+
+                        <p class="text-xs text-gray-500 pt-2">
+
+                            Last verified:
+                            {{ solar.last_checked
+                               if solar and solar.last_checked is defined
+                               else "Official source verification available"
+                            }}
+
                         </p>
 
                     </div>
 
-
-                    <button
-    id="findInstallersBtn"
-    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold"
->
-    📍 Find Near Me
-</button>
-
-                </div>
-
-
-                <p
-                    id="locationStatus"
-                    class="text-sm text-gray-500 mt-3"
-                >
-                </p>
-
-            </div>
-
-
-            <!-- GOVERNMENT SCHEME -->
-
-            <div
-                class="mt-5 p-4 bg-gray-50
-                       rounded-xl border"
-            >
-
-                <div
-                    class="flex justify-between
-                           items-center"
-                >
-
-                    <div>
-
-                        <p class="font-bold text-lg">
-                            🏛 Government Scheme
-                        </p>
-
-                        <p class="text-gray-600">
-                            {{ solar.guidance.scheme.name }}
-                        </p>
-
-                    </div>
-
-
-                    <a
-                        href="{{ solar.guidance.scheme.link }}"
-                        target="_blank"
-                        class="bg-green-500
-                               hover:bg-green-600
-                               text-white px-4 py-3
-                               rounded-xl font-semibold"
-                    >
-                        Apply Now ↗
-                    </a>
-
                 </div>
 
             </div>
 
+        </div>
+
+
+        <!-- ================= BILL ANALYSIS ================= -->
+        <div class="bg-white p-6 rounded-2xl shadow mt-6">
+
+            <h2 class="text-xl font-bold mb-4">
+                📊 Monthly Bill Analysis
+            </h2>
+
+            <div class="h-80">
+                <canvas id="billChart"></canvas>
+            </div>
+
+        </div>
+
+
+        <!-- ================= RECENT REPORTS ================= -->
+        <div class="bg-white p-6 rounded-2xl shadow mt-6">
+
+            <div class="flex justify-between items-center mb-4">
+
+                <h2 class="text-xl font-bold">
+                    📄 Recent Reports
+                </h2>
+
+                <a href="/reports"
+                   class="text-blue-600 hover:underline">
+                    View All
+                </a>
+
+            </div>
+
+
+            {% if history and history|length > 0 %}
+
+                <div class="space-y-3">
+
+                    {% for report in history[:3] %}
+
+                        <div class="p-4 bg-gray-50 rounded-xl border">
+
+                            <p>
+                                <b>₹{{ report.bill_amount }}</b>
+                                - {{ report.units }} units
+                            </p>
+
+                            <small class="text-gray-500">
+                                {{ report.upload_date }}
+                            </small>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
 
             {% else %}
 
-            <p class="text-gray-500">
-                No guidance available yet.
-                Calculate to see recommendations.
-            </p>
+                <p class="text-gray-500">
+                    No reports uploaded yet.
+                </p>
 
             {% endif %}
 
         </div>
 
-    </div>
 
-    
+        <!-- ================= ENERGY SAVING TIPS ================= -->
+        <div class="bg-white p-6 rounded-2xl shadow mt-6">
 
-
-    <!-- ===================================================== -->
-    <!--                     RIGHT COLUMN                      -->
-    <!-- ===================================================== -->
-
-    <div class="space-y-6">
-
-
-        <!-- ================= SOLAR RECOMMENDATION ================= -->
-
-        <div class="bg-white p-6 rounded-3xl shadow-xl">
-
-            <p class="mb-3">
-                This recommendation is based on your
-                monthly electricity usage.
-            </p>
-
-            <h2 class="text-2xl font-bold mb-6">
-                ☀ Solar Recommendation
+            <h2 class="text-xl font-bold mb-4">
+                💡 Energy Saving Tips
             </h2>
 
-
-            <div class="space-y-4">
-
-                <!-- SYSTEM -->
-
-                <div class="flex justify-between">
-
-                    <span>
-                        System
-                    </span>
-
-                    <span class="text-blue-600 font-bold">
-                        {{ solar.solar_kw if solar else "-" }} kW
-                    </span>
-
-                </div>
-
-
-                <!-- MONTHLY SAVING -->
-
-                <div class="flex justify-between">
-
-                    <span>
-                        Monthly Saving
-                    </span>
-
-                    <span class="text-green-600 font-bold">
-                        ₹{{ solar.monthly_savings if solar else "0" }}
-                    </span>
-
-                </div>
-
-                <!-- ================================================= -->
-<!-- EFFECTIVE ELECTRICITY RATE -->
-<!-- ================================================= -->
-
-<div class="flex justify-between items-center mt-3">
-
-    <span>
-        Effective Electricity Rate
-    </span>
-
-    <span class="text-blue-600 font-bold">
-        ₹{{ "%.2f"|format(
-            solar.electricity_rate
-            if solar and solar.electricity_rate is defined
-            else 0
-        ) }}/unit
-    </span>
-
-</div>
-
-<p class="text-xs text-gray-500 mt-1">
-    Calculated from your current bill and units consumed.
-</p>
-
-
-                <!-- YEARLY SAVING -->
-
-                <div class="flex justify-between">
-
-                    <span>
-                        Yearly Saving
-                    </span>
-
-                    <span class="text-blue-600 font-bold">
-                        ₹{{ solar.yearly_savings if solar else "0" }}
-                    </span>
-
-                </div>
-
-                <!-- ================================================= -->
-<!-- 25-YEAR SOLAR IMPACT -->
-<!-- ================================================= -->
-
-<div class="mt-6">
-
-    <h3 class="text-lg font-bold mb-4">
-        🌱 25-Year Solar Impact
-    </h3>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-        <!-- PERIOD -->
-
-        <div class="bg-purple-50 rounded-2xl p-4 text-center">
-
-            <div class="text-2xl mb-1">
-                📅
+            <div class="p-4 bg-green-50 rounded-xl mb-3">
+                Switch to LED bulbs to reduce electricity consumption.
             </div>
 
-            <p class="text-gray-500 text-sm">
-                Estimated Period
-            </p>
-
-            <p class="text-xl font-bold text-purple-600">
-
-                {{ solar.lifetime_years
-                   if solar and solar.lifetime_years is defined
-                   else 25 }}
-
-                Years
-
-            </p>
-
-        </div>
-
-
-        <!-- GENERATION -->
-
-        <div class="bg-blue-50 rounded-2xl p-4 text-center">
-
-            <div class="text-2xl mb-1">
-                ☀️
+            <div class="p-4 bg-yellow-50 rounded-xl mb-3">
+                Use heavy appliances during daytime after installing solar.
             </div>
 
-            <p class="text-gray-500 text-sm">
-                Solar Generation
-            </p>
-
-            <p class="text-xl font-bold text-blue-600">
-
-                {{ "%.0f"|format(
-                    solar.lifetime_generation
-                    if solar and solar.lifetime_generation is defined
-                    else 0
-                ) }}
-
-                kWh
-
-            </p>
-
-        </div>
-
-
-        <!-- SAVINGS -->
-
-        <div class="bg-green-50 rounded-2xl p-4 text-center">
-
-            <div class="text-2xl mb-1">
-                💰
+            <div class="p-4 bg-blue-50 rounded-xl mb-3">
+                Clean your solar panels regularly for maximum efficiency.
             </div>
 
-            <p class="text-gray-500 text-sm">
-                Estimated Savings
-            </p>
-
-            <p class="text-xl font-bold text-green-600">
-
-                ₹{{ "{:,.0f}".format(
-                    solar.lifetime_savings
-                    if solar and solar.lifetime_savings is defined
-                    else 0
-                ) }}
-
-            </p>
-
-        </div>
-
-    </div>
-
-    <p class="text-xs text-gray-500 mt-3">
-        ⚠️ 25-year figures are estimates based on the
-        current solar generation and electricity-rate
-        assumptions. Actual results may vary.
-    </p>
-
-</div>
-
-
-                <!-- ================================================= -->
-<!-- SOLAR GENERATION -->
-<!-- ================================================= -->
-
-<div class="mt-6">
-
-    <h3 class="text-lg font-bold mb-4">
-        ☀️ Estimated Solar Generation
-    </h3>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-
-        <!-- DAILY -->
-
-        <div class="bg-yellow-50 rounded-2xl p-4 text-center">
-
-            <div class="text-2xl mb-1">
-                ☀️
+            <div class="p-4 bg-purple-50 rounded-xl">
+                Monitor your electricity bill every month.
             </div>
 
-            <p class="text-gray-500 text-sm">
-                Daily
-            </p>
-
-            <p class="text-xl font-bold text-yellow-600">
-
-                {{ "%.2f"|format(
-                    solar.get('daily_generation', 0)
-                    if solar else 0
-                ) }}
-
-                kWh
-
-            </p>
-
-        </div>
-
-
-        <!-- MONTHLY -->
-
-        <div class="bg-blue-50 rounded-2xl p-4 text-center">
-
-            <div class="text-2xl mb-1">
-                📅
-            </div>
-
-            <p class="text-gray-500 text-sm">
-                Monthly
-            </p>
-
-            <p class="text-xl font-bold text-blue-600">
-
-                {{ "%.2f"|format(
-                    solar.get('monthly_generation', 0)
-                    if solar else 0
-                ) }}
-
-                kWh
-
-            </p>
-
-        </div>
-
-
-        <!-- YEARLY -->
-
-        <div class="bg-green-50 rounded-2xl p-4 text-center">
-
-            <div class="text-2xl mb-1">
-                📈
-            </div>
-
-            <p class="text-gray-500 text-sm">
-                Yearly
-            </p>
-
-            <p class="text-xl font-bold text-green-600">
-
-                {{ "%.2f"|format(
-                    solar.get('yearly_generation', 0)
-                    if solar else 0
-                ) }}
-
-                kWh
-
-            </p>
-
         </div>
 
     </div>
 
-</div>
 
-<!-- ================================================= -->
-<!-- SOLAR COST BREAKDOWN -->
-<!-- ================================================= -->
+    <!-- ================= CHART.JS ================= -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="mt-6">
+    <script>
 
-    <h3 class="text-lg font-bold mb-4">
-        💰 Solar Cost Breakdown
-    </h3>
+        const months = [
+            {% for row in history %}
+                "{{ row.bill_month }}",
+            {% endfor %}
+        ];
 
+        const bills = [
+            {% for row in history %}
+                {{ row.bill_amount }},
+            {% endfor %}
+        ];
 
-    <!-- ESTIMATED SYSTEM COST -->
+        const chartElement = document.getElementById("billChart");
 
-    <div class="flex justify-between items-center mb-3">
+        if (chartElement && months.length > 0) {
 
-        <span class="text-gray-600">
-            Estimated System Cost
-        </span>
+            new Chart(chartElement, {
 
-        <span class="font-bold text-red-500">
-            ₹{{ "%.2f"|format(
-                solar.installation_cost
-                if solar else 0
-            ) }}
-        </span>
+                type: "bar",
 
-    </div>
+                data: {
 
+                    labels: months,
 
-    <!-- CENTRAL SUBSIDY -->
+                    datasets: [{
+                        label: "Bill ₹",
+                        data: bills,
+                        borderWidth: 1
+                    }]
 
-    <div class="flex justify-between items-center mb-3">
-
-        <span class="text-gray-600">
-            Central Subsidy
-        </span>
-
-        <span class="font-bold text-yellow-500">
-            - ₹{{ "%.2f"|format(
-                solar.subsidy
-                if solar else 0
-            ) }}
-        </span>
-
-    </div>
-
-
-    <!-- DIVIDER -->
-
-    <hr class="my-4">
-
-
-    <!-- ESTIMATED FINAL COST -->
-
-    <div class="flex justify-between items-center">
-
-        <span class="font-bold">
-            Estimated Final Cost
-        </span>
-
-        <span class="text-green-600 font-bold text-xl">
-
-            ₹{{ "%.2f"|format(
-                solar.final_cost
-                if solar else 0
-            ) }}
-
-        </span>
-
-    </div>
-
-</div>
-
-                <!-- ROI -->
-
-                <div class="flex justify-between">
-
-                    <span>
-                        ROI
-                    </span>
-
-                    <span class="text-purple-600 font-bold">
-                        {{ solar.roi if solar else "-" }} yrs
-                    </span>
-
-                </div>
-
-            </div>
-
-            <!-- ================================================= -->
-<!-- OFFICIAL DATA & DISCLAIMER -->
-<!-- ================================================= -->
-
-<div class="mt-8 bg-gray-50 border border-gray-200 rounded-2xl p-5">
-
-    <h3 class="text-lg font-bold mb-3">
-        📌 Data Sources & Important Note
-    </h3>
-
-
-    <div class="space-y-3 text-sm text-gray-600">
-
-        <p>
-            <strong>Official Data Sources:</strong>
-        </p>
-
-
-        <ul class="list-disc ml-5 space-y-1">
-
-    <li>
-        <a
-            href="https://pmsuryaghar.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline"
-        >
-            PM Surya Ghar Muft Bijli Yojana
-        </a>
-    </li>
-
-    <li>
-        <a
-            href="https://mnre.gov.in/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline"
-        >
-            Ministry of New and Renewable Energy (MNRE)
-        </a>
-    </li>
-
-    <li>
-        <a
-            href="https://www.mahadiscom.in/ismart/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-blue-600 hover:underline"
-        >
-            MSEDCL I-SMART
-        </a>
-    </li>
-
-</ul>
-
-
-        <p class="pt-2">
-
-            <strong>⚠️ Estimated Results:</strong>
-
-            Solar generation, electricity savings,
-            installation cost, final cost and ROI shown
-            by SolarBill Optimizer are estimates.
-
-            Actual results may vary depending on
-            electricity tariff, sunlight, roof conditions,
-            system configuration, vendor pricing,
-            applicable charges and government/DISCOM rules.
-
-        </p>
-
-
-        <p>
-
-            Subsidy and official scheme information may
-            change. Always verify the latest information
-            with the official government or DISCOM portal
-            before making a purchase or installation decision.
-
-        </p>
-
-
-        <p class="text-xs text-gray-500 pt-2">
-
-            Last verified:
-            {{ solar.last_checked
-               if solar and solar.last_checked is defined
-               else "Official source verification available"
-            }}
-
-        </p>
-
-    </div>
-
-    <!-- ===================================================== -->
-<!-- BEFORE VS AFTER SOLAR -->
-<!-- ===================================================== -->
-
-<div class="bg-gray-50 rounded-2xl p-5 mb-6">
-
-    <h3 class="text-lg font-bold mb-4">
-        💰 Bill Before vs After Solar
-    </h3>
-
-    <div class="space-y-3">
-
-        <!-- Current Bill -->
-
-        <div class="flex justify-between items-center">
-
-            <span class="text-gray-600">
-                Current Bill
-            </span>
-
-            <span class="font-bold text-red-500">
-                ₹{{ "%.2f"|format(
-                    solar.bill_before_solar
-                    if solar and solar.bill_before_solar is defined
-                    else 0
-                ) }}
-            </span>
-
-        </div>
-
-
-        <!-- Estimated Bill After Solar -->
-
-        <div class="flex justify-between items-center">
-
-            <span class="text-gray-600">
-                Estimated After Solar
-            </span>
-
-            <span class="font-bold text-green-600">
-
-                ₹{{ "%.2f"|format(
-                    solar.estimated_bill_after_solar
-                    if solar and solar.estimated_bill_after_solar is defined
-                    else 0
-                ) }}
-
-            </span>
-
-        </div>
-
-
-        <!-- Monthly Saving -->
-
-        <div class="flex justify-between items-center">
-
-            <span class="text-gray-600">
-                Monthly Saving
-            </span>
-
-            <span class="font-bold text-blue-600">
-
-                ₹{{ "%.2f"|format(
-                    solar.monthly_savings
-                    if solar and solar.monthly_savings is defined
-                    else 0
-                ) }}
-
-            </span>
-
-        </div>
-
-
-        <!-- Reduction -->
-
-        <div class="flex justify-between items-center">
-
-            <span class="text-gray-600">
-                Estimated Reduction
-            </span>
-
-            <span class="font-bold text-green-600">
-
-                {{ solar.bill_reduction_percent
-                   if solar and solar.bill_reduction_percent is defined
-                   else 0 }}%
-
-            </span>
-
-        </div>
-
-    </div>
-
-</div>
-
-        </div>
-
-        
-</div>
-
-
-    
-</div>
-
-<!-- BILL ANALYSIS -->
-<div class="bg-white p-6 rounded-2xl shadow mt-6">
-
-    <h2 class="text-xl font-bold mb-4">
-        📊 Monthly Bill Analysis
-    </h2>
-
-    <div class="h-80">
-        <canvas id="billChart"></canvas>
-    </div>
-
-</div>
-
-
-</div>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h2>📄 Recent Reports</h2>
-        <a href="/reports" class="view-all">View All</a>
-    </div>
-
-    {% if history and history|length > 0 %}
-        {% for report in history[:3] %}
-            <div class="report-item">
-                <p><b>₹{{ report.bill_amount }}</b> - {{ report.units }} units</p>
-                <small>{{ report.upload_date }}</small>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p class="empty-text">No reports uploaded yet.</p>
-    {% endif %}
-</div>
-
-<div class="card">
-    <h2>💡 Energy Saving Tips</h2>
-
-    <div class="tip tip-green">
-        Switch to LED bulbs to reduce electricity consumption.
-    </div>
-
-    <div class="tip tip-yellow">
-        Use heavy appliances during daytime after installing solar.
-    </div>
-
-    <div class="tip tip-blue">
-        Clean your solar panels every month for maximum efficiency.
-    </div>
-
-    <div class="tip tip-purple">
-        Monitor your electricity bill every month.
-    </div>
-
-</div>
-
-
-
-<!-- CHART -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-const months = [
-{% for row in history %}
-"{{ row.bill_month }}",
-{% endfor %}
-];
-
-const bills = [
-{% for row in history %}
-{{ row.bill_amount }},
-{% endfor %}
-];
-
-new Chart(document.getElementById("billChart"), {
-    type: "bar",
-    data: {
-        labels: months,
-        datasets: [{
-            label: "Bill ₹",
-            data: bills,
-            borderWidth: 1
-        }]
-    }
-});
-</script>
-
-<script>
-setInterval(() => {
-    location.reload();
-}, 600000); // refresh every 10 minutes
-</script>
-
-
-
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const solarAIForm = document.getElementById("solarAIForm");
-    const input = document.getElementById("solarQuestion");
-    const button = document.getElementById("aiButton");
-    const responseBox = document.getElementById("aiResponse");
-    const answerBox = document.getElementById("aiAnswer");
-
-
-    // Make sure form exists
-    if (!solarAIForm) {
-        console.error("❌ Solar AI form not found");
-        return;
-    }
-
-
-    // ==========================================
-    // FORM SUBMIT
-    // ==========================================
-
-    solarAIForm.addEventListener("submit", async function (event) {
-
-        // STOP NORMAL FORM SUBMISSION
-        event.preventDefault();
-        event.stopPropagation();
-
-
-        const question = input.value.trim();
-
-
-        if (!question) {
-
-            responseBox.classList.remove("hidden");
-
-            answerBox.innerText =
-                "Please ask me a solar-related question.";
-
-            return;
-        }
-
-
-        // SEND QUESTION
-        await sendSolarQuestion(question);
-
-    });
-
-
-    // ==========================================
-    // SEND QUESTION TO FLASK
-    // ==========================================
-
-    async function sendSolarQuestion(question) {
-
-        responseBox.classList.remove("hidden");
-
-        answerBox.innerText =
-            "Thinking... ☀️";
-
-        button.disabled = true;
-
-        button.innerText =
-            "Thinking...";
-
-
-        try {
-
-            // SEND TO FLASK
-            const response = await fetch("/solar-ai", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
                 },
 
-                body: JSON.stringify({
-                    question: question
-                })
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false
+
+                }
+
+            });
+
+        }
+
+    </script>
+
+
+    <!-- ================= AUTO REFRESH ================= -->
+    <script>
+
+        setInterval(() => {
+            location.reload();
+        }, 600000);
+
+    </script>
+
+
+    <!-- ================= SOLAR AI SCRIPT ================= -->
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const solarAIForm =
+                document.getElementById("solarAIForm");
+
+            const input =
+                document.getElementById("solarQuestion");
+
+            const button =
+                document.getElementById("aiButton");
+
+            const responseBox =
+                document.getElementById("aiResponse");
+
+            const answerBox =
+                document.getElementById("aiAnswer");
+
+
+            if (!solarAIForm) {
+                console.error("Solar AI form not found.");
+                return;
+            }
+
+
+            solarAIForm.addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                const question = input.value.trim();
+
+                if (!question) {
+
+                    responseBox.classList.remove("hidden");
+
+                    answerBox.innerText =
+                        "Please ask me a solar-related question.";
+
+                    return;
+                }
+
+                await sendSolarQuestion(question);
 
             });
 
 
-            const data = await response.json();
+            async function sendSolarQuestion(question) {
 
-
-            // ======================================
-            // SUCCESS
-            // ======================================
-
-            if (data.success) {
+                responseBox.classList.remove("hidden");
 
                 answerBox.innerText =
-                    data.answer;
+                    "Thinking... ☀️";
 
-            }
+                button.disabled = true;
 
-
-            // ======================================
-            // ERROR FROM FLASK
-            // ======================================
-
-            else {
-
-                answerBox.innerText =
-                    data.answer ||
-                    "Sorry, Solar AI could not answer.";
-
-            }
+                button.innerText =
+                    "Thinking...";
 
 
-        } catch (error) {
+                try {
 
-            console.error(
-                "❌ SOLAR AI FRONTEND ERROR:",
-                error
-            );
+                    const response =
+                        await fetch("/solar-ai", {
 
-            answerBox.innerText =
-                "Unable to connect to Solar AI. Please try again.";
+                            method: "POST",
 
-        }
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
 
+                            body: JSON.stringify({
+                                question: question
+                            })
 
-        // ==========================================
-        // CLEAR INPUT
-        // ==========================================
-
-        input.value = "";
+                        });
 
 
-        // ==========================================
-        // RESTORE BUTTON
-        // ==========================================
-
-        button.disabled = false;
-
-        button.innerText =
-            "Ask AI";
-
-    }
+                    const data =
+                        await response.json();
 
 
-    // ==========================================
-    // SUGGESTED QUESTIONS
-    // ==========================================
+                    if (data.success) {
 
-    window.askQuestion = function (question) {
+                        answerBox.innerText =
+                            data.answer;
 
-        input.value = question;
+                    } else {
 
-        sendSolarQuestion(question);
+                        answerBox.innerText =
+                            data.answer ||
+                            "Sorry, Solar AI could not answer.";
 
-    };
+                    }
 
 
-});
+                } catch (error) {
 
-</script>
+                    console.error(
+                        "Solar AI frontend error:",
+                        error
+                    );
 
-<script>
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const button = document.getElementById("findInstallersBtn");
-    const status = document.getElementById("locationStatus");
-
-    button.addEventListener("click", function () {
-
-        if (!navigator.geolocation) {
-
-            status.innerText =
-                "❌ Your browser does not support location services.";
-
-            return;
-        }
-
-        status.innerText =
-            "📍 Getting your current location...";
-
-        navigator.geolocation.getCurrentPosition(
-
-            function (position) {
-
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-                console.log("Latitude:", latitude);
-                console.log("Longitude:", longitude);
-
-                status.innerText =
-                    "📍 Finding solar installers near you...";
-
-                const mapsURL =
-                    `https://www.google.com/maps/search/solar+panel+installers/@${latitude},${longitude},14z`;
-
-                window.open(mapsURL, "_blank");
-
-                status.innerText =
-                    "✅ Showing solar installers near you.";
-
-            },
-
-            function (error) {
-
-                console.error("Location error:", error);
-
-                if (error.code === 1) {
-
-                    status.innerText =
-                        "❌ Location permission denied. Please allow location access.";
-
-                } else {
-
-                    status.innerText =
-                        "❌ Could not get your current location.";
+                    answerBox.innerText =
+                        "Unable to connect to Solar AI. Please try again.";
 
                 }
 
-            },
 
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
+                input.value = "";
+
+                button.disabled = false;
+
+                button.innerText =
+                    "Ask AI";
+
             }
 
-        );
 
-    });
+            window.askQuestion = function (question) {
 
-});
+                input.value = question;
 
-</script>
+                sendSolarQuestion(question);
+
+            };
+
+        });
+
+    </script>
+
+
+    <!-- ================= FIND INSTALLERS ================= -->
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const button =
+                document.getElementById("findInstallersBtn");
+
+            const status =
+                document.getElementById("locationStatus");
+
+
+            if (!button) {
+                return;
+            }
+
+
+            button.addEventListener("click", function () {
+
+                if (!navigator.geolocation) {
+
+                    status.innerText =
+                        "❌ Your browser does not support location services.";
+
+                    return;
+                }
+
+
+                status.innerText =
+                    "📍 Getting your current location...";
+
+
+                navigator.geolocation.getCurrentPosition(
+
+                    function (position) {
+
+                        const latitude =
+                            position.coords.latitude;
+
+                        const longitude =
+                            position.coords.longitude;
+
+
+                        console.log(
+                            "Latitude:",
+                            latitude
+                        );
+
+                        console.log(
+                            "Longitude:",
+                            longitude
+                        );
+
+
+                        status.innerText =
+                            "📍 Finding solar installers near you...";
+
+
+                        const mapsURL =
+                            `https://www.google.com/maps/search/solar+panel+installers/@${latitude},${longitude},14z`;
+
+
+                        window.open(
+                            mapsURL,
+                            "_blank"
+                        );
+
+
+                        status.innerText =
+                            "✅ Showing solar installers near you.";
+
+                    },
+
+
+                    function (error) {
+
+                        console.error(
+                            "Location error:",
+                            error
+                        );
+
+
+                        if (error.code === 1) {
+
+                            status.innerText =
+                                "❌ Location permission denied. Please allow location access.";
+
+                        } else {
+
+                            status.innerText =
+                                "❌ Could not get your current location.";
+
+                        }
+
+                    },
+
+
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+
+                );
+
+            });
+
+        });
+
+    </script>
 
 {% endblock %}

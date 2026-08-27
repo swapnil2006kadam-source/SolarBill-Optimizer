@@ -72,9 +72,6 @@ WEATHER_API_KEY = os.getenv(
     "WEATHER_API_KEY"
 )
 
-# Keep model configurable so we don't have to edit app.py
-# if Google changes the available model.
-
 GEMINI_MODEL = os.getenv(
     "GEMINI_MODEL",
     "gemini-3.6-flash"
@@ -88,18 +85,6 @@ GEMINI_MODEL = os.getenv(
 gemini_client = genai.Client(
     api_key=GEMINI_API_KEY
 )
-
-
-# =========================================================
-# CONSTANTS
-# =========================================================
-
-# Temporary electricity value used for savings estimation.
-#
-# IMPORTANT:
-# This will later be replaced with actual
-# state/DISCOM tariff data.
-
 
 
 # =========================================================
@@ -145,11 +130,8 @@ def get_weather(city):
                 data["main"]["temp"],
                 1
             ),
-
             "condition": data["weather"][0]["main"],
-
             "icon": data["weather"][0]["icon"],
-
             "city": city
         }
 
@@ -196,7 +178,6 @@ def solar_guidance(system_size):
     if system_size <= 2:
 
         return {
-
             "companies": [
 
                 {
@@ -219,7 +200,10 @@ def solar_guidance(system_size):
 
                 {
                     "name": "Adani Solar",
-                    "link": "https://www.adani.com/businesses/energy-utilities/solar-manufacturing",
+                    "link": (
+                        "https://www.adani.com/businesses/"
+                        "energy-utilities/solar-manufacturing"
+                    ),
                     "rating": 4.4
                 },
 
@@ -237,11 +221,8 @@ def solar_guidance(system_size):
             ),
 
             "scheme": {
-
                 "name": "PM Surya Ghar Muft Bijli Yojana",
-
                 "link": "https://pmsuryaghar.gov.in"
-
             }
         }
 
@@ -249,7 +230,6 @@ def solar_guidance(system_size):
     if system_size <= 5:
 
         return {
-
             "companies": [
 
                 {
@@ -271,17 +251,13 @@ def solar_guidance(system_size):
             ),
 
             "scheme": {
-
                 "name": "State Solar Subsidy",
-
                 "link": "https://mnre.gov.in"
-
             }
         }
 
 
     return {
-
         "companies": [
 
             {
@@ -303,11 +279,8 @@ def solar_guidance(system_size):
         ),
 
         "scheme": {
-
             "name": "Commercial Solar Scheme",
-
             "link": "https://mnre.gov.in"
-
         }
     }
 
@@ -315,6 +288,7 @@ def solar_guidance(system_size):
 # =========================================================
 # MAIN SOLAR CALCULATION
 # =========================================================
+
 def calculate_solar_recommendation(
     bill,
     units,
@@ -360,30 +334,14 @@ def calculate_solar_recommendation(
     # -----------------------------------------------------
     # EFFECTIVE ELECTRICITY RATE
     # -----------------------------------------------------
-    #
-    # Calculate the effective rate from the user's
-    # actual electricity bill.
-    #
-    # Example:
-    #
-    # Bill = ₹920.28
-    # Units = 112
-    #
-    # Effective rate = 920.28 / 112
-    #                 ≈ ₹8.22 per unit
-    #
-    # IMPORTANT:
-    # This is an effective bill rate, NOT the official
-    # energy tariff. It can include fixed charges,
-    # taxes and other bill components.
-    # -----------------------------------------------------
 
-    effective_electricity_rate = bill / units
-    
+    effective_electricity_rate = (
+        bill / units
+    )
 
 
     # -----------------------------------------------------
-    # Solar system size
+    # SOLAR SYSTEM SIZE
     # -----------------------------------------------------
 
     solar_kw = round(
@@ -391,14 +349,12 @@ def calculate_solar_recommendation(
         1
     )
 
-
     if solar_kw <= 0:
-
         solar_kw = 0.1
 
 
     # -----------------------------------------------------
-    # Location-based solar generation
+    # LOCATION-BASED SOLAR GENERATION
     # -----------------------------------------------------
 
     generation = estimate_solar_generation(
@@ -421,11 +377,7 @@ def calculate_solar_recommendation(
 
 
     # -----------------------------------------------------
-    # Solar savings
-    # -----------------------------------------------------
-    #
-    # Use the user's effective electricity rate
-    # instead of the fixed ₹8/unit value.
+    # SOLAR SAVINGS
     # -----------------------------------------------------
 
     monthly_savings = round(
@@ -447,13 +399,11 @@ def calculate_solar_recommendation(
 
     LIFETIME_YEARS = 25
 
-
     lifetime_generation = round(
         yearly_generation
         * LIFETIME_YEARS,
         2
     )
-
 
     lifetime_savings = round(
         yearly_savings
@@ -463,14 +413,13 @@ def calculate_solar_recommendation(
 
 
     # -----------------------------------------------------
-    # BEFORE vs AFTER SOLAR
+    # BEFORE VS AFTER SOLAR
     # -----------------------------------------------------
 
     bill_before_solar = round(
         bill,
         2
     )
-
 
     estimated_bill_after_solar = round(
         max(
@@ -482,29 +431,30 @@ def calculate_solar_recommendation(
 
 
     # -----------------------------------------------------
-    # Estimated bill reduction
+    # BILL REDUCTION PERCENT
     # -----------------------------------------------------
 
-    bill_reduction_percent = round(
+    if bill > 0:
 
-        (
+        bill_reduction_percent = round(
             (
-                bill
-                -
-                estimated_bill_after_solar
+                (
+                    bill
+                    - estimated_bill_after_solar
+                )
+                / bill
             )
-            /
-            bill
+            * 100,
+            1
         )
-        * 100,
 
-        1
+    else:
 
-    ) if bill > 0 else 0
+        bill_reduction_percent = 0
 
 
     # -----------------------------------------------------
-    # Central subsidy
+    # CENTRAL SUBSIDY
     # -----------------------------------------------------
 
     subsidy = calculate_central_subsidy(
@@ -513,7 +463,7 @@ def calculate_solar_recommendation(
 
 
     # -----------------------------------------------------
-    # Installation cost
+    # INSTALLATION COST
     # -----------------------------------------------------
 
     installation_cost = calculate_installation_cost(
@@ -523,7 +473,7 @@ def calculate_solar_recommendation(
 
 
     # -----------------------------------------------------
-    # Final cost
+    # FINAL COST
     # -----------------------------------------------------
 
     final_cost = round(
@@ -536,21 +486,20 @@ def calculate_solar_recommendation(
     # ROI / PAYBACK
     # -----------------------------------------------------
 
-    roi = (
+    if yearly_savings > 0:
 
-        round(
+        roi = round(
             final_cost / yearly_savings,
             1
         )
 
-        if yearly_savings > 0
+    else:
 
-        else 0
-    )
+        roi = 0
 
 
     # -----------------------------------------------------
-    # Guidance
+    # GUIDANCE
     # -----------------------------------------------------
 
     guidance = solar_guidance(
@@ -559,7 +508,7 @@ def calculate_solar_recommendation(
 
 
     # -----------------------------------------------------
-    # Final result
+    # FINAL RESULT
     # -----------------------------------------------------
 
     solar = {
@@ -590,7 +539,10 @@ def calculate_solar_recommendation(
 
         "yearly_savings": yearly_savings,
 
-        "electricity_rate": effective_electricity_rate,
+        "electricity_rate": round(
+            effective_electricity_rate,
+            2
+        ),
 
 
         # -------------------------------------------------
@@ -651,7 +603,10 @@ def calculate_solar_recommendation(
         # Location
         # -------------------------------------------------
 
-        "city": city,
+        "city": location_info.get(
+            "city",
+            city
+        ),
 
         "state": state,
 
@@ -672,14 +627,23 @@ def calculate_solar_recommendation(
 
         "average_daily_radiation":
             generation.get(
-                "average_daily_radiation"
+                "average_daily_radiation_kwh"
             ),
 
         "performance_ratio":
             generation.get(
                 "performance_ratio"
-            )
+            ),
 
+        "solar_generation_source":
+            generation.get(
+                "source"
+            ),
+
+        "solar_generation_days":
+            generation.get(
+                "days_used"
+            )
     }
 
 
@@ -723,14 +687,11 @@ def solar_ai():
         if not question:
 
             return jsonify({
-
                 "success": False,
-
                 "answer": (
                     "Please ask me a "
                     "solar-related question."
                 )
-
             })
 
 
@@ -836,11 +797,8 @@ USER QUESTION:
 
 
         return jsonify({
-
             "success": True,
-
             "answer": answer
-
         })
 
 
@@ -1324,38 +1282,35 @@ def dashboard():
     # Current solar calculation
     # -----------------------------------------------------
 
-# =====================================================
-# CURRENT SOLAR RECOMMENDATION
-# =====================================================
-
     if session.get("calc_data"):
 
-    # Show the newest calculation first
         solar = dict(
             session["calc_data"]
         )
 
     else:
 
-    # If there is no fresh calculation,
-    # show the latest saved bill
         if latest_bill:
 
-            solar = dict(latest_bill)
+            solar = dict(
+                latest_bill
+            )
 
-            solar["daily_generation"] = solar.get(
-            "daily_generation",
-            0
-    )
+            solar["daily_generation"] = (
+                solar.get(
+                    "daily_generation",
+                    0
+                )
+            )
 
         else:
 
             solar = None
 
 
-# =====================================================
-# ADD GUIDANCE
-# =====================================================
+    # -----------------------------------------------------
+    # Add guidance
+    # -----------------------------------------------------
 
     if solar:
 
@@ -1364,24 +1319,24 @@ def dashboard():
             0
         )
 
+
         if system_size:
 
             solar["guidance"] = (
-                    solar_guidance(
-                        system_size
-                    )
-                )
-
-        solar["city"] = (
-            solar.get(
-                  "city"
-                )
-                or
-                session.get(
-                    "city",
-                    "Mumbai"
+                solar_guidance(
+                    system_size
                 )
             )
+
+
+        solar["city"] = (
+            solar.get("city")
+            or
+            session.get(
+                "city",
+                "Mumbai"
+            )
+        )
 
 
     return render_template(
@@ -1408,13 +1363,8 @@ def dashboard():
         weather=weather,
 
         power=power
-
     )
 
-
-# =========================================================
-# MANUAL CALCULATOR
-# =========================================================
 
 # =========================================================
 # MANUAL CALCULATOR
@@ -1427,7 +1377,11 @@ def dashboard():
 def calculate():
 
     if "user" not in session:
-        return redirect("/login")
+
+        return redirect(
+            "/login"
+        )
+
 
     try:
 
@@ -1463,16 +1417,21 @@ def calculate():
         # -------------------------------------------------
 
         if bill <= 0:
+
             raise ValueError(
                 "Please enter a valid bill amount."
             )
 
+
         if units <= 0:
+
             raise ValueError(
                 "Please enter valid electricity units."
             )
 
+
         if not city:
+
             raise ValueError(
                 "Please enter your city."
             )
@@ -1490,7 +1449,7 @@ def calculate():
 
 
         # -------------------------------------------------
-        # Store latest calculation in session
+        # Store latest calculation
         # -------------------------------------------------
 
         session["calc_data"] = solar
@@ -1501,7 +1460,7 @@ def calculate():
 
 
         # -------------------------------------------------
-        # Save MANUAL calculation to history
+        # Save manual calculation to history
         # -------------------------------------------------
 
         bill_data = {
@@ -1535,10 +1494,6 @@ def calculate():
         )
 
 
-        # -------------------------------------------------
-        # Go back to dashboard
-        # -------------------------------------------------
-
         return redirect(
             "/dashboard"
         )
@@ -1551,19 +1506,25 @@ def calculate():
             repr(e)
         )
 
+
         flash(
             str(e)
         )
+
 
         return redirect(
             "/dashboard"
         )
 
+
 # =========================================================
 # BILL UPLOAD
 # =========================================================
 
-@app.route("/upload_bill", methods=["POST"])
+@app.route(
+    "/upload_bill",
+    methods=["POST"]
+)
 def upload_bill():
 
     # -----------------------------------------------------
@@ -1571,14 +1532,19 @@ def upload_bill():
     # -----------------------------------------------------
 
     if "user" not in session:
-        return redirect("/login")
+
+        return redirect(
+            "/login"
+        )
 
 
     # -----------------------------------------------------
     # Get uploaded file
     # -----------------------------------------------------
 
-    uploaded_file = request.files.get("bill")
+    uploaded_file = request.files.get(
+        "bill"
+    )
 
 
     if (
@@ -1586,9 +1552,13 @@ def upload_bill():
         or uploaded_file.filename == ""
     ):
 
-        flash("Please select a PDF file.")
+        flash(
+            "Please select a PDF file."
+        )
 
-        return redirect("/dashboard")
+        return redirect(
+            "/dashboard"
+        )
 
 
     # -----------------------------------------------------
@@ -1599,6 +1569,7 @@ def upload_bill():
         "static",
         "uploads"
     )
+
 
     os.makedirs(
         upload_folder,
@@ -1654,9 +1625,6 @@ def upload_bill():
         # Get city
         # -------------------------------------------------
 
-        # Use previously selected city.
-        # If no city exists, use Mumbai.
-
         city = session.get(
             "city",
             "Mumbai"
@@ -1675,7 +1643,7 @@ def upload_bill():
 
 
         # -------------------------------------------------
-        # Store uploaded bill calculation
+        # Store calculation
         # -------------------------------------------------
 
         session["calc_data"] = solar
@@ -1686,7 +1654,7 @@ def upload_bill():
 
 
         # -------------------------------------------------
-        # Save uploaded bill ONCE to database
+        # Save uploaded bill
         # -------------------------------------------------
 
         save_bill(
@@ -1706,20 +1674,12 @@ def upload_bill():
         )
 
 
-        # -------------------------------------------------
-        # Go to dashboard
-        # -------------------------------------------------
-
         return redirect(
             "/dashboard"
         )
 
 
     except Exception as e:
-
-        # -------------------------------------------------
-        # Error handling
-        # -------------------------------------------------
 
         print(
             "❌ BILL UPLOAD ERROR:",
@@ -1735,6 +1695,7 @@ def upload_bill():
         return redirect(
             "/dashboard"
         )
+
 
 # =========================================================
 # REPORTS
@@ -1994,8 +1955,6 @@ def download_pdf(id):
     )
 
 
-
-
 # =========================================================
 # LOGOUT
 # =========================================================
@@ -2009,24 +1968,45 @@ def logout():
         "/login"
     )
 
+
+# =========================================================
+# PROFILE
+# =========================================================
+
 @app.route("/profile")
 def profile():
 
     if "user" not in session:
-        return redirect("/login")
+
+        return redirect(
+            "/login"
+        )
+
 
     return render_template(
         "profile.html",
         user=session["user"]
     )
 
+
+# =========================================================
+# ABOUT
+# =========================================================
+
 @app.route("/about")
 def about():
 
     if "user" not in session:
-        return redirect("/login")
 
-    return render_template("about.html")
+        return redirect(
+            "/login"
+        )
+
+
+    return render_template(
+        "about.html"
+    )
+
 
 # =========================================================
 # RUN APPLICATION

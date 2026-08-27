@@ -1,9 +1,8 @@
 def calculate_solar(units, bill_amount):
-
     units = int(units)
     bill_amount = float(bill_amount)
 
-    # Recommended Solar Capacity
+    # Recommended solar capacity
     if units <= 100:
         solar_kw = 1
     elif units <= 200:
@@ -15,10 +14,10 @@ def calculate_solar(units, bill_amount):
     else:
         solar_kw = 7
 
-    # Approximate installation cost
+    # Installation cost
     installation_cost = solar_kw * 60000
 
-    # Government Subsidy
+    # Government subsidy
     subsidy_table = {
         1: 30000,
         2: 60000,
@@ -29,36 +28,26 @@ def calculate_solar(units, bill_amount):
 
     subsidy = subsidy_table.get(solar_kw, 78000)
 
-    # User pays after subsidy
+    # Cost after subsidy
     final_cost = installation_cost - subsidy
 
-    # Monthly Savings (Approx. 90%)
+    # Estimated savings
     monthly_savings = bill_amount * 0.90
-
-    # Yearly Savings
     yearly_savings = monthly_savings * 12
 
-    # ROI
+    # Return on investment
     roi = final_cost / yearly_savings
 
-    # CO₂ Saved
+    # Estimated CO2 reduction
     co2 = round(units * 0.011, 2)
 
     return {
-
         "solar_kw": solar_kw,
-
-        "monthly_savings": round(monthly_savings,2),
-
-        "yearly_savings": round(yearly_savings,2),
-
+        "monthly_savings": round(monthly_savings, 2),
+        "yearly_savings": round(yearly_savings, 2),
         "subsidy": subsidy,
-
         "installation_cost": installation_cost,
-
         "final_cost": final_cost,
-
-        "roi": round(roi,1),
-
+        "roi": round(roi, 1),
         "co2": co2
     }

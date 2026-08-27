@@ -6,7 +6,7 @@
 
 <div class="max-w-4xl mx-auto px-6 py-12">
 
-    <!-- Page Header -->
+    <!-- PAGE HEADER -->
     <div class="mb-8">
         <h1 class="text-4xl font-bold text-gray-900">
             My Profile
@@ -18,18 +18,14 @@
     </div>
 
 
-    <!-- Profile Card -->
+    <!-- PROFILE CARD -->
     <div class="bg-white rounded-2xl shadow-md p-8">
 
-        <!-- Profile Header -->
+        <!-- PROFILE HEADER -->
         <div class="flex items-center gap-5 pb-6 border-b">
 
-            <div class="w-20 h-20 rounded-full bg-blue-600
-                        flex items-center justify-center
-                        text-white text-3xl font-bold">
-
+            <div class="w-20 h-20 rounded-full bg-blue-600 flex items-center justify-center text-white text-3xl font-bold">
                 {{ user[0]|upper if user else "U" }}
-
             </div>
 
             <div>
@@ -45,19 +41,17 @@
         </div>
 
 
-        <!-- Account Information -->
+        <!-- ACCOUNT INFORMATION -->
         <div class="mt-8">
 
             <h3 class="text-xl font-bold text-gray-900 mb-5">
                 Account Information
             </h3>
 
-
             <div class="grid md:grid-cols-2 gap-6">
 
-                <!-- Username -->
+                <!-- USERNAME -->
                 <div class="border rounded-xl p-5">
-
                     <p class="text-sm text-gray-500">
                         Username
                     </p>
@@ -65,13 +59,11 @@
                     <p class="text-lg font-semibold text-gray-900 mt-1">
                         {{ user }}
                     </p>
-
                 </div>
 
 
-                <!-- Account Type -->
+                <!-- ACCOUNT TYPE -->
                 <div class="border rounded-xl p-5">
-
                     <p class="text-sm text-gray-500">
                         Account Type
                     </p>
@@ -79,13 +71,11 @@
                     <p class="text-lg font-semibold text-gray-900 mt-1">
                         Registered User
                     </p>
-
                 </div>
 
 
-                <!-- Application -->
+                <!-- APPLICATION -->
                 <div class="border rounded-xl p-5">
-
                     <p class="text-sm text-gray-500">
                         Application
                     </p>
@@ -93,13 +83,11 @@
                     <p class="text-lg font-semibold text-gray-900 mt-1">
                         SolarBill Optimizer
                     </p>
-
                 </div>
 
 
-                <!-- Purpose -->
+                <!-- PURPOSE -->
                 <div class="border rounded-xl p-5">
-
                     <p class="text-sm text-gray-500">
                         Purpose
                     </p>
@@ -107,7 +95,6 @@
                     <p class="text-lg font-semibold text-gray-900 mt-1">
                         Solar & Electricity Analysis
                     </p>
-
                 </div>
 
             </div>
@@ -115,25 +102,17 @@
         </div>
 
 
-        <!-- Actions -->
+        <!-- ACTIONS -->
         <div class="mt-8 pt-6 border-t flex gap-4">
 
             <a href="/dashboard"
-               class="bg-blue-600 hover:bg-blue-700
-                      text-white px-6 py-3
-                      rounded-lg font-semibold">
-
+               class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
                 Back to Dashboard
-
             </a>
 
             <a href="/logout"
-               class="bg-red-500 hover:bg-red-600
-                      text-white px-6 py-3
-                      rounded-lg font-semibold">
-
+               class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold">
                 Logout
-
             </a>
 
         </div>

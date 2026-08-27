@@ -1,149 +1,478 @@
 {% extends "base.html" %}
+
 {% block title %}SolarBill Optimizer{% endblock %}
 
 {% block content %}
 
-
-<!-- NAVBAR ONLY HERE -->
+<!-- NAVBAR -->
 <nav class="navbar flex justify-between items-center px-6 py-4">
-  <h1 class="text-white font-bold text-xl"></h1>
-
-  <div class="space-x-6">
-    <a href="/" class="text-white">Home</a>
-    <a href="#features" class="text-white">Features</a>
-    <a href="/login" class="text-white">Login</a>
-    <a href="/register" class="bg-yellow-400 text-black px-4 py-2 rounded-lg">Get Started</a>
-  </div>
-</nav>
-
-<!-- FULL PAGE BACKGROUND -->
-<div class="min-h-screen bg-cover bg-center bg-fixed"
-     style="
-     background-image: 
-     linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.55)),
-     url('{{ url_for('static', filename='images/hero/house.jpg') }}');
-     ">
-
-  <!-- TOP SPACING -->
-  <div class="pt-24"></div>
-
-  <!-- HERO (CENTERED NOW) -->
-  <div class="max-w-4xl mx-auto px-6 text-center text-white">
-
-    <p class="uppercase tracking-[6px] text-yellow-400 font-bold">
-      SMART SOLAR PLATFORM
-    </p>
-
-    <h1 class="text-5xl md:text-7xl font-black leading-tight mt-6">
-      AI Powered
-      <br>
-      <span class="text-yellow-400">
-        SolarBill Optimizer
-      </span>
+    <h1 class="text-white font-bold text-xl">
+        ☀ SolarBill Optimizer
     </h1>
 
-    <p class="mt-8 text-lg text-gray-200 leading-8">
-      Reduce your electricity bill by up to
-      <strong class="text-yellow-400">80%</strong>
-      using intelligent solar analysis.
-      Get solar recommendations, ROI prediction
-      and detailed reports.
-    </p>
+    <div class="space-x-6">
+        <a href="/" class="text-white hover:text-yellow-400 transition">
+            Home
+        </a>
 
-    <div class="flex justify-center gap-5 mt-10 flex-wrap">
-      <a href="/register"
-         class="bg-yellow-400 hover:bg-yellow-500 text-black px-8 py-4 rounded-xl font-bold shadow-lg transition">
-         🚀 Get Started
-      </a>
+        <a href="#features" class="text-white hover:text-yellow-400 transition">
+            Features
+        </a>
 
-      <a href="#features"
-         class="border border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black px-8 py-4 rounded-xl font-bold transition">
-         Learn More
-      </a>
+        <a href="/login" class="text-white hover:text-yellow-400 transition">
+            Login
+        </a>
+
+        <a href="/register"
+           class="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-lg transition">
+            Get Started
+        </a>
+    </div>
+</nav>
+
+
+<!-- FULL PAGE HERO BACKGROUND -->
+<div
+    class="min-h-screen bg-cover bg-center bg-fixed"
+    style="
+        background-image:
+        linear-gradient(
+            rgba(0, 0, 0, 0.25),
+            rgba(0, 0, 0, 0.55)
+        ),
+        url('{{ url_for("static", filename="images/hero/house.jpg") }}');
+    "
+>
+
+    <!-- HERO SPACING -->
+    <div class="pt-24"></div>
+
+
+    <!-- HERO SECTION -->
+    <section class="max-w-4xl mx-auto px-6 text-center text-white">
+
+        <p class="uppercase tracking-[6px] text-yellow-400 font-bold">
+            SMART SOLAR PLATFORM
+        </p>
+
+        <h1 class="text-5xl md:text-7xl font-black leading-tight mt-6">
+
+            AI Powered
+
+            <br>
+
+            <span class="text-yellow-400">
+                SolarBill Optimizer
+            </span>
+
+        </h1>
+
+        <p class="mt-8 text-lg text-gray-200 leading-8">
+
+            Reduce your electricity bill by up to
+
+            <strong class="text-yellow-400">
+                80%
+            </strong>
+
+            using intelligent solar analysis.
+
+            Get solar recommendations, ROI prediction
+            and detailed reports.
+
+        </p>
+
+
+        <!-- HERO BUTTONS -->
+        <div class="flex justify-center gap-5 mt-10 flex-wrap">
+
+            <a
+                href="/register"
+                class="bg-yellow-400 hover:bg-yellow-500
+                       text-black px-8 py-4 rounded-xl
+                       font-bold shadow-lg transition"
+            >
+                🚀 Get Started
+            </a>
+
+
+            <a
+                href="#features"
+                class="border border-yellow-400
+                       text-yellow-400
+                       hover:bg-yellow-400
+                       hover:text-black
+                       px-8 py-4 rounded-xl
+                       font-bold transition"
+            >
+                Learn More
+            </a>
+
+        </div>
+
+    </section>
+
+
+   <!-- =========================================================
+     WHY CHOOSE SOLARBILL OPTIMIZER
+========================================================= -->
+
+<section id="features" class="features-section">
+
+    <div class="section-header">
+
+        <h2>
+            Why Choose
+            <span>SolarBill Optimizer</span>
+        </h2>
+
+        <p>
+            Everything you need to analyze your electricity usage,
+            discover your solar potential and plan your solar investment.
+        </p>
+
     </div>
 
-  </div>
+
+    <div class="features-grid">
 
 
-  <!-- FEATURES -->
-  <div id="features" class="max-w-7xl mx-auto px-6 mt-32 text-white">
+        <!-- BILL ANALYSIS -->
 
-    <h2 class="text-5xl font-bold text-center">
-      Why Choose
-      <span class="text-yellow-400">
-        SolarBill Optimizer
-      </span>
-    </h2>
+        <div class="feature-card">
 
-    <p class="text-center text-gray-300 mt-5 text-xl">
-      Everything you need to analyze your electricity bill
-      and estimate your solar savings.
-    </p>
+            <div class="feature-icon">
+                📄
+            </div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mt-20">
+            <h3>
+                Bill Analysis
+            </h3>
 
-      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
-        <i class="fa-solid fa-file-invoice text-4xl text-yellow-400 mb-4"></i>
-        <h3 class="text-xl font-bold">Upload Bill</h3>
-        <p class="text-gray-300 mt-2">Upload your electricity bill.</p>
-      </div>
+            <p>
+                Upload your electricity bill or manually enter your
+                monthly bill, electricity units and city.
+            </p>
 
-      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
-        <i class="fa-solid fa-solar-panel text-4xl text-yellow-400 mb-4"></i>
-        <h3 class="text-xl font-bold">AI Solar Analysis</h3>
-        <p class="text-gray-300 mt-2">Get best solar recommendation.</p>
-      </div>
+        </div>
 
-      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
-        <i class="fa-solid fa-sack-dollar text-4xl text-yellow-400 mb-4"></i>
-        <h3 class="text-xl font-bold">Savings Estimator</h3>
-        <p class="text-gray-300 mt-2">Calculate monthly savings.</p>
-      </div>
 
-      <div class="bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-xl text-center">
-        <i class="fa-solid fa-chart-line text-4xl text-yellow-400 mb-4"></i>
-        <h3 class="text-xl font-bold">ROI Calculator</h3>
-        <p class="text-gray-300 mt-2">Know payback period.</p>
-      </div>
+        <!-- SOLAR AI -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🤖
+            </div>
+
+            <h3>
+                Solar AI Assistant
+            </h3>
+
+            <p>
+                Ask questions about solar panels, electricity,
+                installation, subsidies, savings and ROI.
+            </p>
+
+        </div>
+
+
+        <!-- SOLAR POTENTIAL -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                ☀️
+            </div>
+
+            <h3>
+                Solar Potential
+            </h3>
+
+            <p>
+                Estimate your solar system size and expected
+                electricity generation based on your location.
+            </p>
+
+        </div>
+
+
+        <!-- WEATHER -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🌦️
+            </div>
+
+            <h3>
+                Weather Analysis
+            </h3>
+
+            <p>
+                Check current weather conditions and understand
+                their impact on solar power generation.
+            </p>
+
+        </div>
+
+
+        <!-- SAVINGS -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                💰
+            </div>
+
+            <h3>
+                Savings & Subsidy
+            </h3>
+
+            <p>
+                Calculate expected monthly and yearly savings along
+                with applicable government solar subsidy.
+            </p>
+
+        </div>
+
+
+        <!-- INSTALLATION -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🏗️
+            </div>
+
+            <h3>
+                Installation Cost
+            </h3>
+
+            <p>
+                Get an estimated solar installation cost based on
+                your recommended system size and location.
+            </p>
+
+        </div>
+
+
+        <!-- ROI -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                📈
+            </div>
+
+            <h3>
+                ROI & Payback
+            </h3>
+
+            <p>
+                Understand your solar investment, expected savings
+                and estimated payback period.
+            </p>
+
+        </div>
+
+
+        <!-- REPORTS -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                📊
+            </div>
+
+            <h3>
+                Reports & History
+            </h3>
+
+            <p>
+                Save your previous calculations, view reports and
+                track your solar analysis history.
+            </p>
+
+        </div>
+
 
     </div>
 
-  </div>
+</section>
 
 
-  <!-- HOW IT WORKS -->
-  <div class="max-w-6xl mx-auto px-6 mt-32 pb-20 text-white text-center">
+    <!-- =========================================================
+     HOW IT WORKS
+========================================================= -->
 
-    <h2 class="text-5xl font-bold">
-      How It Works
-    </h2>
+<section class="how-it-works">
 
-    <p class="text-gray-300 mt-5 text-xl">
-      Simple 3 step process
-    </p>
+    <div class="section-header">
 
-    <div class="grid md:grid-cols-3 gap-10 mt-16">
+        <h2>
+            How It <span>Works</span>
+        </h2>
 
-      <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
-        <h3 class="text-2xl font-bold text-yellow-400">1</h3>
-        <p class="mt-4 text-gray-300">Enter your bill details</p>
-      </div>
-
-      <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
-        <h3 class="text-2xl font-bold text-yellow-400">2</h3>
-        <p class="mt-4 text-gray-300">AI analyzes usage</p>
-      </div>
-
-      <div class="bg-white/10 backdrop-blur-md p-8 rounded-xl border border-white/20">
-        <h3 class="text-2xl font-bold text-yellow-400">3</h3>
-        <p class="mt-4 text-gray-300">Get savings & ROI</p>
-      </div>
+        <p>
+            A simple process to turn your electricity bill into
+            a complete solar investment plan.
+        </p>
 
     </div>
 
-  </div>
+
+    <div class="steps-container">
+
+
+        <!-- STEP 1 -->
+
+        <div class="step-card">
+
+            <div class="step-number">
+                1
+            </div>
+
+            <div class="step-icon">
+                📄
+            </div>
+
+            <h3>
+                Enter Your Electricity Details
+            </h3>
+
+            <p>
+                Upload your electricity bill or manually enter
+                your monthly bill, electricity units and city.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 2 -->
+
+        <div class="step-card">
+
+            <div class="step-number">
+                2
+            </div>
+
+            <div class="step-icon">
+                🔍
+            </div>
+
+            <h3>
+                Analyze Your Usage
+            </h3>
+
+            <p>
+                SolarBill Optimizer analyzes your electricity
+                consumption and verifies your location data.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 3 -->
+
+        <div class="step-card">
+
+            <div class="step-number">
+                3
+            </div>
+
+            <div class="step-icon">
+                ☀️
+            </div>
+
+            <h3>
+                Discover Solar Potential
+            </h3>
+
+            <p>
+                Estimate the recommended solar capacity and
+                expected daily, monthly and yearly generation.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 4 -->
+
+        <div class="step-card">
+
+            <div class="step-number">
+                4
+            </div>
+
+            <div class="step-icon">
+                💰
+            </div>
+
+            <h3>
+                Calculate Savings & Subsidy
+            </h3>
+
+            <p>
+                Calculate your expected savings, government
+                subsidy and estimated installation cost.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 5 -->
+
+        <div class="step-card">
+
+            <div class="step-number">
+                5
+            </div>
+
+            <div class="step-icon">
+                📈
+            </div>
+
+            <h3>
+                Check ROI & Payback
+            </h3>
+
+            <p>
+                See your estimated bill after solar, bill
+                reduction, ROI and payback period.
+            </p>
+
+        </div>
+
+
+        <!-- STEP 6 -->
+
+        <div class="step-card">
+
+            <div class="step-number">
+                6
+            </div>
+
+            <div class="step-icon">
+                📑
+            </div>
+
+            <h3>
+                Save Your Solar Report
+            </h3>
+
+            <p>
+                Save your analysis in your history and download
+                a detailed PDF report whenever you need it.
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
 
 </div>
-
 
 {% endblock %}
