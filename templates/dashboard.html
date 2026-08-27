@@ -1488,4 +1488,96 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 
+<script>
+
+function findNearbyInstallers() {
+
+    const status = document.getElementById("locationStatus");
+
+    // Check browser support
+    if (!navigator.geolocation) {
+
+        status.innerText =
+            "❌ Your browser does not support location services.";
+
+        return;
+    }
+
+    status.innerText =
+        "📍 Getting your current location...";
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            status.innerText =
+                "✅ Location found! Opening nearby solar installers...";
+
+            // Google Maps nearby search
+            const mapsURL =
+                "https://www.google.com/maps/search/solar+panel+installers/@"
+                + latitude
+                + ","
+                + longitude
+                + ",14z";
+
+            window.open(
+                mapsURL,
+                "_blank"
+            );
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Location error:",
+                error
+            );
+
+            if (error.code === 1) {
+
+                status.innerText =
+                    "❌ Location permission denied. Please allow location access.";
+
+            }
+
+            else if (error.code === 2) {
+
+                status.innerText =
+                    "❌ Unable to determine your location.";
+
+            }
+
+            else if (error.code === 3) {
+
+                status.innerText =
+                    "❌ Location request timed out. Try again.";
+
+            }
+
+            else {
+
+                status.innerText =
+                    "❌ Could not get your location.";
+
+            }
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+
+    );
+
+}
+
+</script>
+
 {% endblock %}

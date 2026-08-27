@@ -1,7 +1,9 @@
 # =========================================================
 # LOCATION SERVICE
 # City → State → DISCOM
+# Maharashtra Only
 # =========================================================
+
 
 CITY_DATA = {
 
@@ -44,12 +46,92 @@ CITY_DATA = {
         "discom": "MSEDCL"
     },
 
+    "navi mumbai": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
     "kolhapur": {
         "state": "Maharashtra",
         "discom": "MSEDCL"
     },
 
-    "navi mumbai": {
+    "sangli": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "satara": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "solapur": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "ahmednagar": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "ahilyanagar": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "jalgaon": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "dhule": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "nanded": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "latur": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "akola": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "amravati": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "ratnagiri": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "chandrapur": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "beed": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "osmanabad": {
+        "state": "Maharashtra",
+        "discom": "MSEDCL"
+    },
+
+    "dharashiv": {
         "state": "Maharashtra",
         "discom": "MSEDCL"
     }
@@ -80,6 +162,15 @@ def is_supported_city(city):
 
 
 # =========================================================
+# GET SUPPORTED CITIES
+# =========================================================
+
+def get_supported_cities():
+
+    return sorted(CITY_DATA.keys())
+
+
+# =========================================================
 # TEST
 # =========================================================
 
@@ -94,6 +185,10 @@ if __name__ == "__main__":
         "Pune",
         "Nagpur",
         "Nashik",
+        "Sangli",
+        "Kolhapur",
+        "Satara",
+        "Solapur",
         "Navi Mumbai",
         "Delhi"
     ]
@@ -117,4 +212,15 @@ if __name__ == "__main__":
             )
 
     print("----------------------------------------")
+
+    print()
+    print("✅ Total supported cities:", len(CITY_DATA))
+
+    print()
+    print("Supported Maharashtra cities:")
+
+    for city in get_supported_cities():
+
+        print("•", city)
+
     print()
