@@ -6,8 +6,11 @@ from flask import (
     redirect,
     session,
     flash,
-    send_file
+    send_file,
+    url_for
+    
 )
+import secrets
 
 from werkzeug.security import (
     generate_password_hash,
@@ -22,7 +25,7 @@ from config import SECRET_KEY
 from Bill_reader import read_bill, extract_bill_data
 from save_bill import save_bill
 from generate_pdf import create_pdf
-from email_service import send_login_otp
+from email_service import send_login_otp, send_password_reset_email
 
 from services.subsidy_service import (
     calculate_central_subsidy
@@ -792,7 +795,7 @@ USER QUESTION:
 
 
         print(
-            "🤖 GEMINI RESPONSE RECEIVED"
+            " GEMINI RESPONSE RECEIVED"
         )
 
 
@@ -2133,6 +2136,448 @@ def about():
         "about.html"
     )
 
+
+# =========================================================
+# FORGOT PASSWORD
+# =========================================================
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+
+    # -----------------------------------------------------
+    # SHOW FORGOT PASSWORD PAGE
+    # -----------------------------------------------------
+
+    if request.method == "GET":
+
+        return render_template(
+            "forgot_password.html"
+        )
+
+
+    # -----------------------------------------------------
+    # GET EMAIL FROM FORM
+    # -----------------------------------------------------
+
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
+
+
+    if not email:
+
+        flash(
+            "Please enter your email address.",
+            "error"
+        )
+
+        return redirect(
+            url_for("forgot_password")
+        )
+
+
+    # -----------------------------------------------------
+    # FIND USER
+    # -----------------------------------------------------
+
+    conn = get_connection()
+
+    cursor = conn.cursor(
+        dictionary=True
+    )
+
+    try:
+
+        cursor.execute(
+            """
+            SELECT id, email
+            FROM users
+            WHERE LOWER(email) = %s
+            LIMIT 1
+            """,
+            (email,)
+        )
+
+        user = cursor.fetchone()
+
+    except Exception as error:
+
+        print(
+            "User lookup error:",
+            error
+        )
+
+        flash(
+            "Something went wrong. Please try again later.",
+            "error"
+        )
+
+        return redirect(
+            url_for("forgot_password")
+        )
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+    # -----------------------------------------------------
+    # USER NOT FOUND
+    # -----------------------------------------------------
+
+    if not user:
+
+        flash(
+            "If an account exists with this email, "
+            "a password reset link has been sent.",
+            "success"
+        )
+
+        return redirect(
+            url_for("forgot_password")
+        )
+
+
+    # -----------------------------------------------------
+    # GENERATE SECURE RESET TOKEN
+    # -----------------------------------------------------
+
+    token = secrets.token_urlsafe(32)
+
+
+    # -----------------------------------------------------
+    # TOKEN EXPIRATION
+    # -----------------------------------------------------
+
+    expires_at = (
+        datetime.utcnow()
+        + timedelta(minutes=30)
+    )
+
+
+    # -----------------------------------------------------
+    # SAVE TOKEN IN DATABASE
+    # -----------------------------------------------------
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET reset_token = %s,
+                reset_token_expires = %s
+            WHERE id = %s
+            """,
+            (
+                token,
+                expires_at,
+                user["id"]
+            )
+        )
+
+        conn.commit()
+
+    except Exception as error:
+
+        conn.rollback()
+
+        print(
+            "Password reset database error:",
+            error
+        )
+
+        flash(
+            "Something went wrong. Please try again later.",
+            "error"
+        )
+
+        return redirect(
+            url_for("forgot_password")
+        )
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+    # -----------------------------------------------------
+    # CREATE RESET LINK
+    # -----------------------------------------------------
+
+    reset_link = url_for(
+        "reset_password",
+        token=token,
+        _external=True
+    )
+
+
+    # -----------------------------------------------------
+    # SEND RESET EMAIL THROUGH BREVO
+    # -----------------------------------------------------
+
+    try:
+
+        email_status = send_password_reset_email(
+            email,
+            reset_link
+        )
+
+    except Exception as error:
+
+        print(
+            "Password reset email error:",
+            error
+        )
+
+        email_status = None
+
+
+    # -----------------------------------------------------
+    # CHECK EMAIL RESULT
+    # -----------------------------------------------------
+
+    if email_status in (200, 201):
+
+        flash(
+            "If an account exists with this email, "
+            "a password reset link has been sent.",
+            "success"
+        )
+
+    else:
+
+        print(
+            "Brevo password reset email failed."
+        )
+
+        print(
+            "Brevo status:",
+            email_status
+        )
+
+        flash(
+            "Unable to send the password reset email. "
+            "Please try again later.",
+            "error"
+        )
+
+
+    # -----------------------------------------------------
+    # RETURN TO FORGOT PASSWORD PAGE
+    # -----------------------------------------------------
+
+    return redirect(
+        url_for("forgot_password")
+    )
+
+# =========================================================
+# RESET PASSWORD
+# =========================================================
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+
+    # -----------------------------------------------------
+    # FIND USER USING RESET TOKEN
+    # -----------------------------------------------------
+
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute(
+            """
+            SELECT id, email
+            FROM users
+            WHERE reset_token = %s
+              AND reset_token_expires > %s
+            LIMIT 1
+            """,
+            (token, datetime.utcnow())
+        )
+
+        user = cursor.fetchone()
+
+    except Exception as error:
+
+        print("Reset token lookup error:", error)
+
+        flash(
+            "Something went wrong. Please try again.",
+            "error"
+        )
+
+        return redirect(url_for("login"))
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+    # -----------------------------------------------------
+    # INVALID OR EXPIRED TOKEN
+    # -----------------------------------------------------
+
+    if not user:
+
+        flash(
+            "This password reset link is invalid or has expired.",
+            "error"
+        )
+
+        return redirect(url_for("forgot_password"))
+
+
+    # -----------------------------------------------------
+    # SHOW RESET PASSWORD PAGE
+    # -----------------------------------------------------
+
+    if request.method == "GET":
+
+        return render_template(
+            "reset_password.html",
+            token=token
+        )
+
+
+    # -----------------------------------------------------
+    # GET NEW PASSWORD
+    # -----------------------------------------------------
+
+    password = request.form.get(
+        "password",
+        ""
+    )
+
+    confirm_password = request.form.get(
+        "confirm_password",
+        ""
+    )
+
+
+    # -----------------------------------------------------
+    # VALIDATE PASSWORD
+    # -----------------------------------------------------
+
+    if not password:
+
+        flash(
+            "Please enter a new password.",
+            "error"
+        )
+
+        return render_template(
+            "reset_password.html",
+            token=token
+        )
+
+
+    if len(password) < 8:
+
+        flash(
+            "Password must be at least 8 characters long.",
+            "error"
+        )
+
+        return render_template(
+            "reset_password.html",
+            token=token
+        )
+
+
+    if password != confirm_password:
+
+        flash(
+            "Passwords do not match.",
+            "error"
+        )
+
+        return render_template(
+            "reset_password.html",
+            token=token
+        )
+
+
+    # -----------------------------------------------------
+    # HASH NEW PASSWORD
+    # -----------------------------------------------------
+
+    hashed_password = generate_password_hash(
+        password
+    )
+
+
+    # -----------------------------------------------------
+    # UPDATE PASSWORD
+    # AND CLEAR RESET TOKEN
+    # -----------------------------------------------------
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET password = %s,
+                reset_token = NULL,
+                reset_token_expires = NULL
+            WHERE id = %s
+            """,
+            (
+                hashed_password,
+                user["id"]
+            )
+        )
+
+        conn.commit()
+
+    except Exception as error:
+
+        conn.rollback()
+
+        print(
+            "Password reset update error:",
+            error
+        )
+
+        flash(
+            "Unable to reset your password. Please try again.",
+            "error"
+        )
+
+        return render_template(
+            "reset_password.html",
+            token=token
+        )
+
+    finally:
+
+        cursor.close()
+        conn.close()
+
+
+    # -----------------------------------------------------
+    # SUCCESS
+    # -----------------------------------------------------
+
+    flash(
+        "Password reset successfully. You can now log in.",
+        "success"
+    )
+
+    return redirect(
+        url_for("login")
+    )
 
 # =========================================================
 # RUN APPLICATION
