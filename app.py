@@ -1183,11 +1183,13 @@ def login():
 @app.route("/dashboard")
 def dashboard():
 
+    # -----------------------------------------------------
+    # Check Login
+    # -----------------------------------------------------
+
     if "user" not in session:
 
-        return redirect(
-            "/login"
-        )
+        return redirect("/login")
 
 
     # -----------------------------------------------------
@@ -1228,6 +1230,10 @@ def dashboard():
 
     try:
 
+        # -------------------------------------------------
+        # Get Bill History
+        # -------------------------------------------------
+
         cursor.execute(
             """
             SELECT *
@@ -1240,9 +1246,12 @@ def dashboard():
             )
         )
 
-
         history = cursor.fetchall()
 
+
+        # -------------------------------------------------
+        # Latest Bill
+        # -------------------------------------------------
 
         latest_bill = (
             history[0]
@@ -1250,6 +1259,10 @@ def dashboard():
             else None
         )
 
+
+        # -------------------------------------------------
+        # Dashboard Statistics
+        # -------------------------------------------------
 
         cursor.execute(
             """
@@ -1268,7 +1281,6 @@ def dashboard():
             )
         )
 
-
         stats = cursor.fetchone()
 
 
@@ -1279,7 +1291,7 @@ def dashboard():
 
 
     # -----------------------------------------------------
-    # Current solar calculation
+    # Current Solar Calculation
     # -----------------------------------------------------
 
     if session.get("calc_data"):
@@ -1288,37 +1300,144 @@ def dashboard():
             session["calc_data"]
         )
 
+    elif latest_bill:
+
+        solar = dict(
+            latest_bill
+        )
+
     else:
 
-        if latest_bill:
-
-            solar = dict(
-                latest_bill
-            )
-
-            solar["daily_generation"] = (
-                solar.get(
-                    "daily_generation",
-                    0
-                )
-            )
-
-        else:
-
-            solar = None
+        solar = None
 
 
     # -----------------------------------------------------
-    # Add guidance
+    # Ensure Solar Generation Values Exist
     # -----------------------------------------------------
 
     if solar:
+
+        # -------------------------------------------------
+        # Daily Generation
+        # -------------------------------------------------
+
+        daily_generation = solar.get(
+            "daily_generation",
+            0
+        )
+
+        try:
+
+            daily_generation = float(
+                daily_generation or 0
+            )
+
+        except (TypeError, ValueError):
+
+            daily_generation = 0
+
+
+        solar["daily_generation"] = (
+            daily_generation
+        )
+
+
+        # -------------------------------------------------
+        # Monthly Generation
+        # -------------------------------------------------
+
+        monthly_generation = solar.get(
+            "monthly_generation"
+        )
+
+        try:
+
+            if monthly_generation is None:
+
+                monthly_generation = (
+                    daily_generation * 30
+                )
+
+            else:
+
+                monthly_generation = float(
+                    monthly_generation
+                )
+
+        except (TypeError, ValueError):
+
+            monthly_generation = (
+                daily_generation * 30
+            )
+
+
+        solar["monthly_generation"] = (
+            monthly_generation
+        )
+
+
+        # -------------------------------------------------
+        # Yearly Generation
+        # -------------------------------------------------
+
+        yearly_generation = solar.get(
+            "yearly_generation"
+        )
+
+        try:
+
+            if yearly_generation is None:
+
+                yearly_generation = (
+                    daily_generation * 365
+                )
+
+            else:
+
+                yearly_generation = float(
+                    yearly_generation
+                )
+
+        except (TypeError, ValueError):
+
+            yearly_generation = (
+                daily_generation * 365
+            )
+
+
+        solar["yearly_generation"] = (
+            yearly_generation
+        )
+
+
+        # -------------------------------------------------
+        # System Size
+        # -------------------------------------------------
 
         system_size = solar.get(
             "solar_kw",
             0
         )
 
+        try:
+
+            system_size = float(
+                system_size or 0
+            )
+
+        except (TypeError, ValueError):
+
+            system_size = 0
+
+
+        solar["solar_kw"] = (
+            system_size
+        )
+
+
+        # -------------------------------------------------
+        # Guidance
+        # -------------------------------------------------
 
         if system_size:
 
@@ -1329,6 +1448,10 @@ def dashboard():
             )
 
 
+        # -------------------------------------------------
+        # City
+        # -------------------------------------------------
+
         solar["city"] = (
             solar.get("city")
             or
@@ -1338,6 +1461,10 @@ def dashboard():
             )
         )
 
+
+    # -----------------------------------------------------
+    # Render Dashboard
+    # -----------------------------------------------------
 
     return render_template(
 
@@ -1363,9 +1490,8 @@ def dashboard():
         weather=weather,
 
         power=power
+
     )
-
-
 # =========================================================
 # MANUAL CALCULATOR
 # =========================================================
